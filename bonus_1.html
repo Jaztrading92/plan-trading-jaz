@@ -173,18 +173,112 @@
   }
 </style>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<script type="text/javascript">
-function jazSetLanguage(lang){
-  document.documentElement.setAttribute('lang', lang);
-  document.querySelectorAll('.lang-content').forEach(function(el){
-    el.style.display = (el.getAttribute('data-lang') === lang) ? 'block' : 'none';
-  });
-  var sel = document.querySelector('.lang-select');
-  if (sel) sel.value = lang;
-}
-</script>
+<style>
+  .jz-lang{position:fixed;top:16px;right:16px;z-index:100000;font-family:"Source Serif 4",Georgia,serif}
+  [dir="rtl"] .jz-lang{right:auto;left:16px}
+  .jz-lang .lang-btn{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:none;background:#153840;color:#fff;font-family:inherit;font-weight:700;font-size:.85rem;letter-spacing:.03em;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+  .jz-lang .lang-btn .chev{width:12px;height:12px;transition:transform .2s}
+  .jz-lang.open .lang-btn .chev{transform:rotate(180deg)}
+  .jz-lang .lang-menu{position:absolute;top:calc(100% + 10px);inset-inline-end:0;width:250px;max-width:calc(100vw - 32px);padding:10px;border-radius:14px;background:#fff;border:1px solid #DCD2B8;box-shadow:0 20px 50px -10px rgba(0,0,0,.35);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s ease}
+  .jz-lang.open .lang-menu{opacity:1;visibility:visible;transform:none}
+  .jz-lang .lang-menu-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:#5B5548;padding:4px 6px 10px}
+  .jz-lang .lang-options-grid{display:grid;grid-template-columns:1fr;gap:2px;max-height:60vh;overflow-y:auto}
+  .jz-lang .lang-option{display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;border-radius:9px;background:transparent;color:#2A2620;text-align:start;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer}
+  .jz-lang .lang-option:hover,.jz-lang .lang-option.active{background:#E8F1F5;color:#153840}
+  .jz-lang .lang-option .option-name{flex:1}
+  .jz-lang .lang-option .option-code{font-size:11px;font-weight:700;color:#5B5548}
+  [dir="rtl"] .lecon ul,[dir="rtl"] .lecon ol{padding-left:0;padding-right:1.4rem}
+  [dir="rtl"] .exemple,[dir="rtl"] .callout{border-left:none;border-right:3px solid var(--ember)}
+  [dir="rtl"] .callout{border-right-color:var(--pine-soft)}
+  [dir="rtl"] .checklist li{padding:.55rem 2.1rem .55rem 0}
+  [dir="rtl"] .checklist li::before{left:auto;right:0}
+  [dir="rtl"] thead th{text-align:right}
+  @media (max-width:640px){.jz-lang{top:10px;right:10px}[dir="rtl"] .jz-lang{left:10px}
+    table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+</style>
+<div class="jz-lang" id="langWrap">
+  <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+    <span id="curFlag"></span><span id="curCode">FR</span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <div class="lang-menu" id="langMenu">
+    <div class="lang-menu-title">CHOISIR LA LANGUE / SELECT LANGUAGE</div>
+    <div class="lang-options-grid">
+                <button class="lang-option active" data-lang="fr" onclick="selectLanguage('fr')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#fff" d="M0 0h640v480H0z"/><path fill="#002654" d="M0 0h213.3v480H0z"/><path fill="#ce1126" d="M426.7 0H640v480H426.7z"/></g></svg></span>
+                  <span class="option-name">Français</span>
+                  <span class="option-code">FR</span>
+                </button>
+                <button class="lang-option" data-lang="en" onclick="selectLanguage('en')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#012169" d="M0 0h640v480H0z"/><path fill="#fff" d="m75 0 245 180L565 0h75v60L435 240l205 180v60h-75L320 300 75 480H0v-60l205-180L0 60V0h75z"/><path fill="#C8102E" d="m424 288 216 158v34h-46L378 300l46-12zM0 480l196-144h46L26 480H0zM640 0 444 144h-46L614 0h26zM0 0l216 158-46 12L0 34V0z"/><path fill="#fff" d="M240 0h160v480H240zM0 160h640v160H0z"/><path fill="#C8102E" d="M266 0h108v480H266zM0 186h640v108H0z"/></svg></span>
+                  <span class="option-name">English</span>
+                  <span class="option-code">EN</span>
+                </button>
+                <button class="lang-option" data-lang="es" onclick="selectLanguage('es')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#c60b1e" d="M0 0h640v480H0z"/><path fill="#ffc400" d="M0 120h640v240H0z"/></svg></span>
+                  <span class="option-name">Español</span>
+                  <span class="option-code">ES</span>
+                </button>
+                <button class="lang-option" data-lang="ar" onclick="selectLanguage('ar')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#006c35" d="M0 0h640v480H0z"/><path fill="#fff" d="M120 280h400v20H120zM220 200h200v30H220z"/></svg></span>
+                  <span class="option-name">العربية</span>
+                  <span class="option-code">AR</span>
+                </button>
+                <button class="lang-option" data-lang="zh" onclick="selectLanguage('zh')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#de2910" d="M0 0h640v480H0z"/><polygon fill="#ffde00" points="160,80 178,136 238,136 190,172 208,228 160,192 112,228 130,172 82,136 142,136"/></svg></span>
+                  <span class="option-name">中文 (Chinois)</span>
+                  <span class="option-code">ZH</span>
+                </button>
+                <button class="lang-option" data-lang="de" onclick="selectLanguage('de')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#000" d="M0 0h640v160H0z"/><path fill="#d00" d="M0 160h640v160H0z"/><path fill="#ffce00" d="M0 320h640v160H0z"/></svg></span>
+                  <span class="option-name">Deutsch</span>
+                  <span class="option-code">DE</span>
+                </button>
+                <button class="lang-option" data-lang="pt" onclick="selectLanguage('pt')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#ff0000" d="M0 0h640v480H0z"/><path fill="#006600" d="M0 0h256v480H0z"/><circle cx="256" cy="240" r="80" fill="#ffff00"/></svg></span>
+                  <span class="option-name">Português</span>
+                  <span class="option-code">PT</span>
+                </button>
+                <button class="lang-option" data-lang="ru" onclick="selectLanguage('ru')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#fff" d="M0 0h640v160H0z"/><path fill="#0039a6" d="M0 160h640v160H0z"/><path fill="#d52b1e" d="M0 320h640v160H0z"/></svg></span>
+                  <span class="option-name">Русский</span>
+                  <span class="option-code">RU</span>
+                </button>
+                <button class="lang-option" data-lang="it" onclick="selectLanguage('it')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#fff" d="M0 0h640v480H0z"/><path fill="#009246" d="M0 0h213.3v480H0z"/><path fill="#ce2b37" d="M426.7 0H640v480H426.7z"/></g></svg></span>
+                  <span class="option-name">Italiano</span>
+                  <span class="option-code">IT</span>
+                </button>
+                <button class="lang-option" data-lang="ja" onclick="selectLanguage('ja')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#fff" d="M0 0h640v480H0z"/><circle cx="320" cy="240" r="144" fill="#bc002d"/></svg></span>
+                  <span class="option-name">日本語 (Japonais)</span>
+                  <span class="option-code">JA</span>
+                </button>
+                <button class="lang-option" data-lang="hi" onclick="selectLanguage('hi')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#f93" d="M0 0h640v160H0z"/><path fill="#fff" d="M0 160h640v160H0z"/><path fill="#128807" d="M0 320h640v160H0z"/><circle cx="320" cy="240" r="50" fill="none" stroke="#008" stroke-width="10"/></svg></span>
+                  <span class="option-name">हिन्दी (Hindi)</span>
+                  <span class="option-code">HI</span>
+                </button>
+              </div>
+  </div>
+</div>
+
+<style>
+  .jz-lang{font-family:"Source Sans Pro","Segoe UI",Arial,sans-serif}
+  .jz-lang .lang-btn{background:#0A1628; border:1px solid rgba(255,255,255,.25)}
+  [dir="rtl"] .bonus-card,[dir="rtl"] .card{border-left:1px solid var(--line); border-right:4px solid var(--navy)}
+  [dir="rtl"] .note{border-left:none; border-right:3px solid var(--blue); border-radius:8px 0 0 8px}
+  [dir="rtl"] .warn{border-left:none; border-right:3px solid var(--red); border-radius:6px 0 0 6px}
+  [dir="rtl"] .field:nth-child(odd){border-right:none; border-left:1px solid var(--line)}
+  @media(max-width:600px){ [dir="rtl"] .field:nth-child(odd){border-left:none} }
+  @media(max-width:560px){ [dir="rtl"] .bonus-card{text-align:right} }
+  @media print{ .jz-lang{display:none} }
+</style>
+
+
 
 <div class="lang-content" data-lang="fr">
 
@@ -192,13 +286,7 @@ function jazSetLanguage(lang){
   <div class="wrap">
     <div class="cover-top">
       <div class="brandname">JAZ <b>TRADING</b> · FIMC</div>
-      <div class="lang-box">
-        <span class="lang-label">Langue</span>
-        <select class="lang-select" onchange="jazSetLanguage(this.value)">
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
-      </div>
+      
     </div>
     <div class="cover-body">
       <span class="badge">BONUS 1</span>
@@ -281,100 +369,103 @@ function jazSetLanguage(lang){
 <footer><b>JAZ TRADING FIMC</b> — Bonus 1 du Plan de Trading Professionnel</footer>
 </div>
 
-<div class="lang-content" data-lang="en" style="display:none">
 
-<div class="cover">
-  <div class="wrap">
-    <div class="cover-top">
-      <div class="brandname">JAZ <b>TRADING</b> · FIMC</div>
-      <div class="lang-box">
-        <span class="lang-label">Language</span>
-        <select class="lang-select" onchange="jazSetLanguage(this.value)">
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-    </div>
-    <div class="cover-body">
-      <span class="badge">BONUS 1</span>
-      <h1>Checklist before every position</h1>
-      <div class="rule"></div>
-      <p class="sub">A 30-second check to run through right before entering a position, turning the Professional Trading Plan's discipline into an automatic reflex.</p>
-    </div>
-  </div>
-</div>
 
-<div class="content">
-  <div class="wrap">
-
-    <div class="fields">
-      <div class="field"><b>Date</b><span class="line"></span></div>
-      <div class="field"><b>Time</b><span class="line"></span></div>
-      <div class="field"><b>Asset traded</b><span class="line"></span></div>
-      <div class="field"><b>Account capital</b><span class="line"></span></div>
-      <div class="field"><b>Account type</b><span class="line"></span></div>
-      <div class="field"><b>Profile (Safe / Aggressive)</b><span class="line"></span></div>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>1</span></span>Consistency with the plan</h3>
-      <ul class="check">
-        <li><span class="box"></span>The profile used (Safe or Aggressive) matches the strategy's actual frequency on this asset.</li>
-        <li><span class="box"></span>The risk % applied to this position exactly matches the one planned for this capital and profile.</li>
-        <li><span class="box"></span>This position does not exceed the risk limit already committed today (daily risk).</li>
-        <li><span class="box"></span>This position does not exceed the risk limit already committed this week (weekly risk).</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>2</span></span>Technical parameters of the position</h3>
-      <ul class="check">
-        <li><span class="box"></span>The stop-loss is placed, calculated from the dollar risk amount — never at random or "by feel".</li>
-        <li><span class="box"></span>The take-profit is placed, with an RR consistent with the tested strategy's statistics.</li>
-        <li><span class="box"></span>The position size (lot) has been recalculated for this specific asset, accounting for its spread and volatility — never copied from another market.</li>
-        <li><span class="box"></span>The leverage used stays within the account's usual safety margin.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>3</span></span>Market context</h3>
-      <ul class="check">
-        <li><span class="box"></span>No major economic announcement is expected in the next few minutes on this asset.</li>
-        <li><span class="box"></span>The spread at the time of entry stays within a normal range for this asset.</li>
-        <li><span class="box"></span>Current volatility is compatible with the planned stop-loss (neither abnormally low nor abnormally high).</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>4</span></span>Today's history</h3>
-      <ul class="check">
-        <li><span class="box"></span>The number of losing positions already taken today does not trigger the risk-reduction rule (3 losses → R/2, 5 losses → 30% of R).</li>
-        <li><span class="box"></span>If one of the plan's drawdown rules is already active, this position's risk has been adjusted accordingly before entering.</li>
-        <li><span class="box"></span>This position is not an attempt to "win back" a previous loss.</li>
-      </ul>
-      <div class="note">A position opened to make up for a loss is never a position opened according to the plan.</div>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>5</span></span>State of mind and final decision</h3>
-      <ul class="check">
-        <li><span class="box"></span>I am calm, rested, and focused at the moment of this decision.</li>
-        <li><span class="box"></span>This position is taken according to the plan, without impatience, without overconfidence after a winning streak.</li>
-        <li><span class="box"></span>I am ready to accept the planned loss (the R) if the stop-loss is hit, without interfering with it once the position is open.</li>
-      </ul>
-      <div class="warn">Golden rule: if even one box above cannot be honestly checked, the position is not taken.</div>
-    </div>
-
-    <div class="fields" style="margin-top:26px;">
-      <div class="field"><b>Position result (fill in after closing)</b><span class="line"></span></div>
-      <div class="field"><b>Plan followed 100%? (yes / no)</b><span class="line"></span></div>
-    </div>
-
-  </div>
-</div>
-
-<footer><b>JAZ TRADING FIMC</b> — Bonus 1 of the Professional Trading Plan</footer>
-</div>
-
+<script>
+// TRADUCTION 11 LANGUES DU PLAN DE TRADING : le français est la source, chaque bloc de texte est remplacé selon la langue choisie
+var JAZ_F_I18N = {"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC":{"ar":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","de":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","en":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","es":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","hi":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","it":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","ja":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","pt":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","ru":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","zh":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC"},"BONUS 1":{"ar":"المكافأة 1","de":"BONUS 1","en":"BONUS 1","es":"BONUS 1","hi":"बोनस 1","it":"BONUS 1","ja":"ボーナス1","pt":"BÓNUS 1","ru":"БОНУС 1","zh":"附赠1"},"Checklist avant chaque position":{"ar":"قائمة التحقق قبل كل صفقة","de":"Checkliste vor jeder Position","en":"Checklist before every position","es":"Checklist antes de cada posición","hi":"हर पोज़ीशन से पहले की चेकलिस्ट","it":"Checklist prima di ogni posizione","ja":"ポジションを取る前のチェックリスト","pt":"Checklist antes de cada posição","ru":"Чек-лист перед каждой позицией","zh":"每次开仓前的检查清单"},"Un contrôle de 30 secondes à exécuter juste avant d\u0027entrer en position, pour transformer la discipline du Plan de Trading Professionnel en réflexe automatique.":{"ar":"فحص مدته 30 ثانية يُجرى قبيل الدخول في الصفقة مباشرة، لتحويل انضباط خطة التداول الاحترافية إلى ردّ فعل تلقائي.","de":"Ein 30-Sekunden-Check direkt vor dem Einstieg in eine Position, der die Disziplin des Professionellen Trading-Plans zum automatischen Reflex macht.","en":"A 30-second check to run through right before entering a position, turning the Professional Trading Plan\u0027s discipline into an automatic reflex.","es":"Un control de 30 segundos que hay que hacer justo antes de entrar en posición, para convertir la disciplina del Plan de Trading Profesional en un reflejo automático.","hi":"पोज़ीशन में घुसने से ठीक पहले की 30 सेकंड की जांच, ताकि पेशेवर ट्रेडिंग प्लान का अनुशासन अपने आप की आदत बन जाए।","it":"Un controllo di 30 secondi da fare subito prima di entrare in posizione, per trasformare la disciplina del Piano di Trading Professionale in un riflesso automatico.","ja":"ポジションを取る直前に行う30秒のチェックで、プロのトレードプランの規律を自動的な習慣に変えます。","pt":"Um controlo de 30 segundos a fazer mesmo antes de entrar em posição, para transformar a disciplina do Plano de Trading Profissional num reflexo automático.","ru":"30-секундная проверка прямо перед входом в позицию, чтобы дисциплина Профессионального торгового плана стала автоматическим рефлексом.","zh":"在开仓前30秒完成的检查，让专业交易计划的纪律变成自动反应。"},"Date":{"ar":"التاريخ","de":"Datum","en":"Date","es":"Fecha","hi":"तारीख","it":"Data","ja":"日付","pt":"Data","ru":"Дата","zh":"日期"},"Heure":{"ar":"الساعة","de":"Uhrzeit","en":"Time","es":"Hora","hi":"समय","it":"Ora","ja":"時刻","pt":"Hora","ru":"Время","zh":"时间"},"Actif tradé":{"ar":"الأداة المتداولة","de":"Gehandeltes Instrument","en":"Asset traded","es":"Activo operado","hi":"ट्रेड किया गया एसेट","it":"Strumento negoziato","ja":"取引銘柄","pt":"Ativo negociado","ru":"Инструмент","zh":"交易品种"},"Capital du compte":{"ar":"رأس مال الحساب","de":"Kontokapital","en":"Account capital","es":"Capital de la cuenta","hi":"अकाउंट की पूंजी","it":"Capitale del conto","ja":"口座資金","pt":"Capital da conta","ru":"Капитал счёта","zh":"账户资金"},"Type de compte":{"ar":"نوع الحساب","de":"Kontotyp","en":"Account type","es":"Tipo de cuenta","hi":"अकाउंट का प्रकार","it":"Tipo di conto","ja":"口座タイプ","pt":"Tipo de conta","ru":"Тип счёта","zh":"账户类型"},"Profil (Safe / Agressif)":{"ar":"الملف (Safe / هجومي)","de":"Profil (Safe / Aggressiv)","en":"Profile (Safe / Aggressive)","es":"Perfil (Safe / Agresivo)","hi":"प्रोफ़ाइल (Safe / आक्रामक)","it":"Profilo (Safe / Aggressivo)","ja":"プロファイル（Safe / アグレッシブ）","pt":"Perfil (Safe / Agressivo)","ru":"Профиль (Safe / Агрессивный)","zh":"类型（稳健型Safe / 激进型）"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eCohérence avec le plan":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eالاتساق مع الخطة","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eÜbereinstimmung mit dem Plan","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eConsistency with the plan","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eCoherencia con el plan","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eप्लान से मेल","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eCoerenza con il piano","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eプランとの整合性","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eCoerência com o plano","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eСоответствие плану","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003e与计划一致"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe profil utilisé (Safe ou Agressif) correspond à la fréquence réelle de la stratégie sur cet actif.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eالملف المستخدم (Safe أو هجومي) يطابق التكرار الفعلي للاستراتيجية على هذه الأداة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDas verwendete Profil (Safe oder Aggressiv) entspricht der tatsächlichen Frequenz der Strategie auf diesem Instrument.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe profile used (Safe or Aggressive) matches the strategy\u0027s actual frequency on this asset.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl perfil utilizado (Safe o Agresivo) corresponde a la frecuencia real de la estrategia en este activo.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस्तेमाल की गई प्रोफ़ाइल (Safe या आक्रामक) इस एसेट पर रणनीति की असली आवृत्ति से मेल खाती है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIl profilo usato (Safe o Aggressivo) corrisponde alla frequenza reale della strategia su questo strumento.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e使っているプロファイル（Safeまたはアグレッシブ）が、この銘柄での戦略の実際の取引頻度に合っている。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO perfil usado (Safe ou Agressivo) corresponde à frequência real da estratégia neste ativo.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eВыбранный профиль (Safe или Агрессивный) соответствует реальной частоте сделок стратегии на этом инструменте.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e所用类型（稳健型或激进型）符合该策略在此品种上的实际交易频率。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe % de risque appliqué à cette position correspond exactement à celui prévu pour ce capital et ce profil.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eنسبة المخاطرة المطبقة على هذه الصفقة تطابق تمامًا النسبة المقررة لرأس المال هذا وهذا الملف.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDer auf diese Position angewandte Risiko-% entspricht genau dem für dieses Kapital und dieses Profil vorgesehenen.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe risk % applied to this position exactly matches the one planned for this capital and profile.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl % de riesgo aplicado a esta posición corresponde exactamente al previsto para este capital y este perfil.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस पोज़ीशन पर लगाया गया जोखिम % ठीक वही है जो इस पूंजी और इस प्रोफ़ाइल के लिए तय है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa % di rischio applicata a questa posizione corrisponde esattamente a quella prevista per questo capitale e questo profilo.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこのポジションのリスク％が、この資金とプロファイルで予定したものと完全に一致している。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eA % de risco aplicada a esta posição corresponde exatamente à prevista para este capital e este perfil.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eПроцент риска для этой позиции точно соответствует предусмотренному для этого капитала и профиля.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本仓位的风险百分比与该资金和类型预定的完全一致。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eCette position ne dépasse pas la limite de risque déjà engagée aujourd\u0027hui (risque jour).":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eهذه الصفقة لا تتجاوز حد المخاطرة المستخدم بالفعل اليوم (المخاطرة اليومية).","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDiese Position überschreitet nicht das heute bereits eingegangene Risikolimit (Tagesrisiko).","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThis position does not exceed the risk limit already committed today (daily risk).","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posición no supera el límite de riesgo ya comprometido hoy (riesgo diario).","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eयह पोज़ीशन आज पहले से लिए गए जोखिम की सीमा (दैनिक जोखिम) पार नहीं करती।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eQuesta posizione non supera il limite di rischio già impegnato oggi (rischio giornaliero).","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこのポジションは、今日すでに取っているリスクの上限（1日のリスク）を超えない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posição não ultrapassa o limite de risco já comprometido hoje (risco diário).","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЭта позиция не превышает лимит риска, уже задействованный сегодня (дневной риск).","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本仓位不会超过今天已占用的风险上限（每日风险）。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eCette position ne dépasse pas la limite de risque déjà engagée cette semaine (risque semaine).":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eهذه الصفقة لا تتجاوز حد المخاطرة المستخدم بالفعل هذا الأسبوع (المخاطرة الأسبوعية).","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDiese Position überschreitet nicht das diese Woche bereits eingegangene Risikolimit (Wochenrisiko).","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThis position does not exceed the risk limit already committed this week (weekly risk).","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posición no supera el límite de riesgo ya comprometido esta semana (riesgo semanal).","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eयह पोज़ीशन इस हफ्ते पहले से लिए गए जोखिम की सीमा (साप्ताहिक जोखिम) पार नहीं करती।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eQuesta posizione non supera il limite di rischio già impegnato questa settimana (rischio settimanale).","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこのポジションは、今週すでに取っているリスクの上限（1週間のリスク）を超えない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posição não ultrapassa o limite de risco já comprometido esta semana (risco semanal).","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЭта позиция не превышает лимит риска, уже задействованный на этой неделе (недельный риск).","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本仓位不会超过本周已占用的风险上限（每周风险）。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eParamètres techniques de la position":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eالمعايير التقنية للصفقة","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eTechnische Parameter der Position","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eTechnical parameters of the position","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eParámetros técnicos de la posición","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eपोज़ीशन के तकनीकी पैरामीटर","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eParametri tecnici della posizione","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eポジションの技術的パラメーター","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eParâmetros técnicos da posição","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eТехнические параметры позиции","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003e仓位技术参数"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe stop-loss est placé, calculé à partir du montant de risque en dollars — jamais au hasard ni « au feeling ».":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eوقف الخسارة موضوع ومحسوب انطلاقًا من مبلغ المخاطرة بالدولار — وليس عشوائيًا أو «بالإحساس» أبدًا.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDer Stop-Loss ist gesetzt und aus dem Risikobetrag in Dollar berechnet — niemals zufällig oder „nach Gefühl“.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe stop-loss is placed, calculated from the dollar risk amount — never at random or \"by feel\".","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl stop-loss está colocado, calculado a partir del importe de riesgo en dólares, nunca al azar ni «a ojo».","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eस्टॉप-लॉस लगा है, डॉलर में जोखिम की रकम से गिना गया — कभी अंदाज़े से या \"मन से\" नहीं।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLo stop-loss è piazzato, calcolato a partire dall\u0027importo di rischio in dollari — mai a caso né «a sensazione».","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eストップロスが置かれており、ドル建てのリスク額から計算されている — 適当や「感覚」では決していない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO stop-loss está colocado, calculado a partir do montante de risco em dólares — nunca ao acaso nem «a olho».","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eСтоп-лосс выставлен и рассчитан исходя из суммы риска в долларах — никогда наугад или «на глаз».","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e止损已设置，并根据美元风险金额计算——绝不随意设置或\"凭感觉\"。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe take-profit est placé, avec un RR cohérent avec les statistiques de la stratégie testée.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eجني الأرباح موضوع، مع RR متسق مع إحصائيات الاستراتيجية المختبرة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDer Take-Profit ist gesetzt, mit einem RR, das zu den Statistiken der getesteten Strategie passt.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe take-profit is placed, with an RR consistent with the tested strategy\u0027s statistics.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl take-profit está colocado, con un RR coherente con las estadísticas de la estrategia probada.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eटेक-प्रॉफ़िट लगा है, ऐसे RR के साथ जो परखी गई रणनीति के आंकड़ों से मेल खाता है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIl take-profit è piazzato, con un RR coerente con le statistiche della strategia testata.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eテイクプロフィットが置かれており、RRが検証済みの戦略の統計と合っている。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO take-profit está colocado, com um RR coerente com as estatísticas da estratégia testada.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eТейк-профит выставлен, с RR, соответствующим статистике протестированной стратегии.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e止盈已设置，RR与已测试策略的统计数据相符。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa taille de la position (lot) a été recalculée pour cet actif précis, en tenant compte de son spread et de sa volatilité — jamais copiée d\u0027un autre marché.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eأُعيد حساب حجم الصفقة (اللوت) لهذه الأداة تحديدًا مع مراعاة فارق السعر والتقلب — وليس منسوخًا من سوق آخر أبدًا.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDie Positionsgröße (Lot) wurde für genau dieses Instrument neu berechnet, unter Berücksichtigung von Spread und Volatilität — niemals von einem anderen Markt übernommen.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe position size (lot) has been recalculated for this specific asset, accounting for its spread and volatility — never copied from another market.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl tamaño de la posición (lote) se ha recalculado para este activo concreto, teniendo en cuenta su spread y su volatilidad, nunca copiado de otro mercado.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eपोज़ीशन का आकार (लॉट) इसी एसेट के लिए उसके स्प्रेड और अस्थिरता को ध्यान में रखकर दोबारा गिना गया — किसी दूसरे बाज़ार से कॉपी नहीं किया।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa dimensione della posizione (lotto) è stata ricalcolata per questo strumento preciso, tenendo conto di spread e volatilità — mai copiata da un altro mercato.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eポジションサイズ（ロット）を、この銘柄のスプレッドとボラティリティを考慮して計算し直した — 別の市場からそのままコピーしていない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO tamanho da posição (lote) foi recalculado para este ativo específico, tendo em conta o seu spread e a sua volatilidade — nunca copiado de outro mercado.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eРазмер позиции (лот) пересчитан для этого конкретного инструмента с учётом его спреда и волатильности — никогда не скопирован с другого рынка.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e仓位大小（手数）已针对此品种重新计算，考虑了其点差和波动——绝不照搬其他市场。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eL\u0027effet de levier utilisé reste dans la marge de sécurité habituelle du compte.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eالرافعة المالية المستخدمة تبقى ضمن هامش الأمان المعتاد للحساب.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDer verwendete Hebel bleibt innerhalb des üblichen Sicherheitsrahmens des Kontos.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe leverage used stays within the account\u0027s usual safety margin.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl apalancamiento utilizado se mantiene dentro del margen de seguridad habitual de la cuenta.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस्तेमाल किया लीवरेज अकाउंट के सामान्य सुरक्षा मार्जिन के भीतर है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa leva usata resta entro il margine di sicurezza abituale del conto.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e使用しているレバレッジが、口座の通常の安全マージンの範囲内にある。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eA alavancagem usada mantém-se dentro da margem de segurança habitual da conta.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eИспользуемое кредитное плечо остаётся в пределах обычного запаса безопасности счёта.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e所用杠杆在账户通常的安全范围内。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eContexte du marché":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eسياق السوق","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eMarktumfeld","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eMarket context","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eContexto del mercado","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eबाज़ार का माहौल","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eContesto di mercato","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003e相場の状況","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eContexto do mercado","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eРыночный контекст","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003e市场环境"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eAucune annonce économique majeure n\u0027est prévue dans les prochaines minutes sur cet actif.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eلا يوجد أي إعلان اقتصادي مهم متوقع خلال الدقائق القادمة على هذه الأداة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIn den nächsten Minuten ist keine wichtige Wirtschaftsmeldung für dieses Instrument geplant.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNo major economic announcement is expected in the next few minutes on this asset.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNo hay ningún anuncio económico importante previsto en los próximos minutos para este activo.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eअगले कुछ मिनटों में इस एसेट पर कोई बड़ी आर्थिक घोषणा तय नहीं है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNessun annuncio economico importante è previsto nei prossimi minuti su questo strumento.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこの銘柄について、今後数分以内に重要な経済指標の発表予定がない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNenhum anúncio económico importante está previsto nos próximos minutos para este ativo.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eВ ближайшие минуты по этому инструменту не ожидается важных экономических новостей.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e接下来几分钟内该品种没有重大经济数据发布。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe spread au moment de l\u0027entrée reste dans une fourchette normale pour cet actif.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eفارق السعر لحظة الدخول ضمن نطاق طبيعي لهذه الأداة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDer Spread zum Einstiegszeitpunkt liegt in einem normalen Bereich für dieses Instrument.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe spread at the time of entry stays within a normal range for this asset.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl spread en el momento de la entrada está dentro de un rango normal para este activo.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eएंट्री के समय स्प्रेड इस एसेट के सामान्य दायरे में है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLo spread al momento dell\u0027ingresso resta in un intervallo normale per questo strumento.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eエントリー時のスプレッドが、この銘柄として通常の範囲内にある。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO spread no momento da entrada está dentro de um intervalo normal para este ativo.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eСпред в момент входа находится в нормальном для этого инструмента диапазоне.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e入场时的点差处于该品种的正常范围内。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa volatilité actuelle est compatible avec le stop-loss prévu (ni anormalement faible, ni anormalement élevée).":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eالتقلب الحالي متوافق مع وقف الخسارة المقرر (ليس منخفضًا ولا مرتفعًا بشكل غير طبيعي).","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDie aktuelle Volatilität passt zum geplanten Stop-Loss (weder ungewöhnlich niedrig noch ungewöhnlich hoch).","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eCurrent volatility is compatible with the planned stop-loss (neither abnormally low nor abnormally high).","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa volatilidad actual es compatible con el stop-loss previsto (ni anormalmente baja ni anormalmente alta).","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eमौजूदा अस्थिरता तय स्टॉप-लॉस के अनुकूल है (न असामान्य रूप से कम, न असामान्य रूप से ज़्यादा)।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa volatilità attuale è compatibile con lo stop-loss previsto (né anormalmente bassa né anormalmente alta).","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e現在のボラティリティが、予定したストップロスと合っている（異常に低くも高くもない）。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eA volatilidade atual é compatível com o stop-loss previsto (nem anormalmente baixa, nem anormalmente alta).","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eТекущая волатильность соответствует запланированному стоп-лоссу (не аномально низкая и не аномально высокая).","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e当前波动与计划的止损相匹配（既不异常低，也不异常高）。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eHistorique du jour":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eسجل اليوم","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eVerlauf des Tages","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eToday\u0027s history","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eHistorial del día","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eआज का रिकॉर्ड","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eStorico della giornata","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003e今日の履歴","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eHistórico do dia","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eИстория дня","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003e当日记录"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe nombre de positions perdantes déjà prises aujourd\u0027hui ne déclenche pas la règle de réduction du risque (3 pertes → R/2, 5 pertes → 30 % de R).":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eعدد الصفقات الخاسرة المفتوحة اليوم لا يفعّل قاعدة خفض المخاطرة (3 خسائر ← R/2، 5 خسائر ← 30% من R).","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDie Anzahl der heute bereits eingegangenen Verlustpositionen löst die Regel zur Risikoreduzierung nicht aus (3 Verluste → R/2, 5 Verluste → 30 % von R).","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe number of losing positions already taken today does not trigger the risk-reduction rule (3 losses → R/2, 5 losses → 30% of R).","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl número de posiciones perdedoras ya tomadas hoy no activa la regla de reducción del riesgo (3 pérdidas → R/2, 5 pérdidas → 30 % de R).","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eआज पहले से ली गई घाटे वाली पोज़ीशन की संख्या जोखिम घटाने का नियम लागू नहीं करती (3 नुकसान → R/2, 5 नुकसान → R का 30%)।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIl numero di posizioni in perdita già prese oggi non attiva la regola di riduzione del rischio (3 perdite → R/2, 5 perdite → 30% di R).","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e今日すでに出た負けポジションの数が、リスク引き下げルール（3敗 → R/2、5敗 → Rの30％）に該当しない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO número de posições perdedoras já tomadas hoje não ativa a regra de redução do risco (3 perdas → R/2, 5 perdas → 30 % de R).","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЧисло убыточных позиций, уже открытых сегодня, не включает правило снижения риска (3 убытка → R/2, 5 убытков → 30 % от R).","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e今天已出现的亏损仓位数量不会触发降低风险规则（3笔亏损 → R/2，5笔亏损 → R的30%）。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eSi une règle de drawdown du plan est déjà active, le risque de cette position a été ajusté en conséquence avant d\u0027entrer.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eإذا كانت إحدى قواعد التراجع في الخطة مفعّلة بالفعل، فقد عُدّلت مخاطرة هذه الصفقة وفقًا لذلك قبل الدخول.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eFalls bereits eine Drawdown-Regel des Plans aktiv ist, wurde das Risiko dieser Position vor dem Einstieg entsprechend angepasst.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIf one of the plan\u0027s drawdown rules is already active, this position\u0027s risk has been adjusted accordingly before entering.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSi ya está activa una regla de drawdown del plan, el riesgo de esta posición se ha ajustado en consecuencia antes de entrar.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eअगर प्लान का कोई ड्रॉडाउन नियम पहले से लागू है, तो एंट्री से पहले इस पोज़ीशन का जोखिम उसी हिसाब से बदला गया है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSe una regola di drawdown del piano è già attiva, il rischio di questa posizione è stato adeguato di conseguenza prima di entrare.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eプランのドローダウンルールがすでに作動している場合、エントリー前にこのポジションのリスクをそれに合わせて調整した。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSe uma regra de drawdown do plano já estiver ativa, o risco desta posição foi ajustado em conformidade antes de entrar.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЕсли правило просадки плана уже действует, риск этой позиции был скорректирован соответствующим образом до входа.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e如果计划中的某条回撤规则已经生效，本仓位的风险已在入场前相应调整。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eCette position ne cherche pas à « se refaire » après une perte précédente.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eهذه الصفقة لا تهدف إلى «التعويض» بعد خسارة سابقة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDiese Position soll keinen vorherigen Verlust „wieder reinholen“.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThis position is not an attempt to \"win back\" a previous loss.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posición no busca «recuperarse» de una pérdida anterior.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eयह पोज़ीशन पिछले नुकसान की \"भरपाई\" के लिए नहीं है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eQuesta posizione non cerca di «rifarsi» dopo una perdita precedente.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこのポジションは、前の損失を「取り返す」ためのものではない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posição não procura «recuperar» uma perda anterior.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЭта позиция не пытается «отыграть» предыдущий убыток.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本仓位不是为了在亏损后\"翻本\"。"},"Une position ouverte pour compenser une perte n\u0027est jamais une position ouverte selon le plan.":{"ar":"الصفقة المفتوحة لتعويض خسارة ليست أبدًا صفقة مفتوحة وفق الخطة.","de":"Eine Position, die eröffnet wird, um einen Verlust auszugleichen, ist niemals eine Position nach Plan.","en":"A position opened to make up for a loss is never a position opened according to the plan.","es":"Una posición abierta para compensar una pérdida nunca es una posición abierta según el plan.","hi":"नुकसान की भरपाई के लिए खोली गई पोज़ीशन कभी भी प्लान के हिसाब से खोली गई पोज़ीशन नहीं होती।","it":"Una posizione aperta per compensare una perdita non è mai una posizione aperta secondo il piano.","ja":"損失を埋め合わせるために持つポジションは、決してプランどおりのポジションではありません。","pt":"Uma posição aberta para compensar uma perda nunca é uma posição aberta segundo o plano.","ru":"Позиция, открытая, чтобы компенсировать убыток, никогда не бывает позицией по плану.","zh":"为弥补亏损而开的仓位，绝不是按计划开的仓位。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eÉtat d\u0027esprit et décision finale":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eالحالة الذهنية والقرار النهائي","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eGeisteshaltung und endgültige Entscheidung","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eState of mind and final decision","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eEstado de ánimo y decisión final","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eमन की स्थिति और अंतिम फैसला","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eStato d\u0027animo e decisione finale","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003e心の状態と最終判断","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eEstado de espírito e decisão final","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eСостояние и окончательное решение","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003e心态与最终决定"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eJe suis calme, reposé et concentré au moment de prendre cette décision.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eأنا هادئ ومرتاح ومركّز لحظة اتخاذ هذا القرار.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIch bin ruhig, ausgeruht und konzentriert, während ich diese Entscheidung treffe.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eI am calm, rested, and focused at the moment of this decision.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEstoy tranquilo, descansado y concentrado en el momento de tomar esta decisión.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eयह फैसला लेते समय मैं शांत, आराम किया हुआ और एकाग्र हूं।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSono calmo, riposato e concentrato nel momento di prendere questa decisione.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこの判断を下す時点で、私は落ち着いていて、休息が取れていて、集中している。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEstou calmo, descansado e concentrado no momento de tomar esta decisão.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЯ спокоен, отдохнул и сосредоточен в момент принятия этого решения.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e做这个决定时，我平静、休息充足、注意力集中。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eCette position est prise selon le plan, sans impatience, sans excès de confiance après une série de gains.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eهذه الصفقة تُفتح وفق الخطة، دون استعجال ودون ثقة زائدة بعد سلسلة أرباح.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDiese Position wird nach Plan eingegangen, ohne Ungeduld und ohne Übermut nach einer Gewinnserie.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThis position is taken according to the plan, without impatience, without overconfidence after a winning streak.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posición se toma según el plan, sin impaciencia y sin exceso de confianza tras una racha de ganancias.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eयह पोज़ीशन प्लान के हिसाब से ली जा रही है, बिना बेसब्री के, जीत की कड़ी के बाद ज़रूरत से ज़्यादा भरोसे के बिना।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eQuesta posizione è presa secondo il piano, senza impazienza e senza eccesso di fiducia dopo una serie di guadagni.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこのポジションはプランどおりで、焦りもなく、連勝後の過信もない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta posição é tomada segundo o plano, sem impaciência, sem excesso de confiança depois de uma série de ganhos.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЭта позиция открывается по плану, без нетерпения и без излишней уверенности после серии прибыльных сделок.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本仓位按计划开立，没有急躁，也没有在连续盈利后过度自信。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eJe suis prêt à accepter la perte prévue (le R) si le stop-loss est touché, sans intervenir dessus une fois la position ouverte.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eأنا مستعد لقبول الخسارة المقررة (R) إذا لُمس وقف الخسارة، دون التدخل فيه بعد فتح الصفقة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIch bin bereit, den geplanten Verlust (das R) zu akzeptieren, wenn der Stop-Loss erreicht wird, ohne nach dem Eröffnen einzugreifen.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eI am ready to accept the planned loss (the R) if the stop-loss is hit, without interfering with it once the position is open.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEstoy dispuesto a aceptar la pérdida prevista (el R) si se toca el stop-loss, sin intervenir una vez abierta la posición.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eस्टॉप-लॉस लगने पर मैं तय नुकसान (R) स्वीकार करने को तैयार हूं, पोज़ीशन खुलने के बाद उसमें दखल दिए बिना।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSono pronto ad accettare la perdita prevista (l\u0027R) se lo stop-loss viene toccato, senza intervenire una volta aperta la posizione.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eストップロスに達したら予定した損失（R）を受け入れる覚悟があり、ポジションを持った後に手を加えない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEstou pronto a aceitar a perda prevista (o R) se o stop-loss for atingido, sem mexer nele depois de a posição estar aberta.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЯ готов принять запланированный убыток (R), если сработает стоп-лосс, не вмешиваясь после открытия позиции.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e如果触及止损，我愿意接受预定的亏损（R），开仓后不去干预。"},"Règle d\u0027or : si une seule case ci-dessus ne peut pas être cochée honnêtement, la position n\u0027est pas prise.":{"ar":"القاعدة الذهبية: إذا تعذّر وضع علامة بصدق على خانة واحدة فقط مما سبق، فلا تُفتح الصفقة.","de":"Goldene Regel: Wenn auch nur ein Kästchen oben nicht ehrlich angekreuzt werden kann, wird die Position nicht eingegangen.","en":"Golden rule: if even one box above cannot be honestly checked, the position is not taken.","es":"Regla de oro: si una sola casilla de arriba no puede marcarse con honestidad, la posición no se toma.","hi":"सुनहरा नियम: अगर ऊपर का एक भी खाना ईमानदारी से टिक नहीं हो सकता, तो पोज़ीशन नहीं ली जाती।","it":"Regola d\u0027oro: se anche una sola casella qui sopra non può essere spuntata onestamente, la posizione non si prende.","ja":"鉄則：上の項目が一つでも正直にチェックできなければ、そのポジションは取らない。","pt":"Regra de ouro: se uma única caixa acima não puder ser marcada com honestidade, a posição não é tomada.","ru":"Золотое правило: если хотя бы один пункт выше нельзя честно отметить, позиция не открывается.","zh":"黄金法则：上面只要有一项不能如实勾选，就不开这个仓。"},"Résultat de la position (à remplir après clôture)":{"ar":"نتيجة الصفقة (تُملأ بعد الإغلاق)","de":"Ergebnis der Position (nach dem Schließen ausfüllen)","en":"Position result (fill in after closing)","es":"Resultado de la posición (a rellenar tras el cierre)","hi":"पोज़ीशन का नतीजा (बंद होने के बाद भरें)","it":"Risultato della posizione (da compilare dopo la chiusura)","ja":"ポジションの結果（決済後に記入）","pt":"Resultado da posição (a preencher depois do fecho)","ru":"Результат позиции (заполнить после закрытия)","zh":"仓位结果（平仓后填写）"},"Plan respecté à 100 % ? (oui / non)":{"ar":"هل احتُرمت الخطة 100%؟ (نعم / لا)","de":"Plan zu 100 % eingehalten? (ja / nein)","en":"Plan followed 100%? (yes / no)","es":"¿Plan respetado al 100 %? (sí / no)","hi":"प्लान का 100% पालन हुआ? (हां / नहीं)","it":"Piano rispettato al 100%? (sì / no)","ja":"プランを100％守れたか？（はい / いいえ）","pt":"Plano respeitado a 100 %? (sim / não)","ru":"План соблюдён на 100 %? (да / нет)","zh":"是否100%遵守计划？（是 / 否）"},"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 1 du Plan de Trading Professionnel":{"ar":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — المكافأة 1 من خطة التداول الاحترافية","de":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 1 des Professionellen Trading-Plans","en":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 1 of the Professional Trading Plan","es":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 1 del Plan de Trading Profesional","hi":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — पेशेवर ट्रेडिंग प्लान का बोनस 1","it":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 1 del Piano di Trading Professionale","ja":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — プロのトレードプランのボーナス1","pt":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bónus 1 do Plano de Trading Profissional","ru":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Бонус 1 к Профессиональному торговому плану","zh":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — 专业交易计划附赠1"}};
+var JAZ_F_UI = {
+"fr":{"title":"Bonus 1 — Checklist avant chaque position — JAZ TRADING FIMC"},
+"en":{"title":"Bonus 1 — Checklist before every position — JAZ TRADING FIMC"},
+"es":{"title":"Bonus 1 — Checklist antes de cada posición — JAZ TRADING FIMC"},
+"pt":{"title":"Bónus 1 — Checklist antes de cada posição — JAZ TRADING FIMC"},
+"de":{"title":"Bonus 1 — Checkliste vor jeder Position — JAZ TRADING FIMC"},
+"it":{"title":"Bonus 1 — Checklist prima di ogni posizione — JAZ TRADING FIMC"},
+"ru":{"title":"Бонус 1 — Чек-лист перед каждой позицией — JAZ TRADING FIMC"},
+"zh":{"title":"附赠1 — 每次开仓前的检查清单 — JAZ TRADING FIMC"},
+"ja":{"title":"ボーナス1 — ポジションを取る前のチェックリスト — JAZ TRADING FIMC"},
+"ar":{"title":"المكافأة 1 — قائمة التحقق قبل كل صفقة — JAZ TRADING FIMC"},
+"hi":{"title":"बोनस 1 — हर पोज़ीशन से पहले की चेकलिस्ट — JAZ TRADING FIMC"}
+}
+;
+var JAZ_F_LANGS = ['fr','en','es','ar','zh','de','pt','ru','it','ja','hi'];
+var JAZ_F_BASE = 'h1,h2,h3,h4,h5,p,li,td,th,dt,dd,caption,figcaption,label,button,option';
+var JAZ_F_SEL = JAZ_F_BASE + ',.jz-tx';
+var JAZ_F_INLINE = /^(STRONG|EM|B|I|U|BR|A|SPAN|SUP|SUB|CODE|SMALL|MARK)$/;
+function jzfNorm(s) { return s.replace(/\s+/g, ' ').trim(); }
+function jzfIsLeaf(el) { return el.matches(JAZ_F_BASE) && !el.querySelector(JAZ_F_BASE); }
+// regroupe le texte libre (hors balises de bloc) dans des <span class="jz-tx"> pour pouvoir le traduire
+function jzfWrap(root) {
+  var all = root.querySelectorAll('*');
+  for (var i = 0; i < all.length; i++) {
+    var el = all[i];
+    if (el.closest('script,style,svg,select,.jz-lang')) continue;
+    var hasText = false;
+    for (var c = el.firstChild; c; c = c.nextSibling) if (c.nodeType === 3 && /[A-Za-zÀ-ÿ]/.test(c.nodeValue)) { hasText = true; break; }
+    if (!hasText) continue;
+    var a = el, covered = false;
+    while (a && a !== root) { if (jzfIsLeaf(a) || (a.classList && a.classList.contains('jz-tx'))) { covered = true; break; } a = a.parentElement; }
+    if (covered) continue;
+    var run = [], kids = Array.prototype.slice.call(el.childNodes);
+    var flush = function () {
+      if (run.some(function (n) { return /[A-Za-zÀ-ÿ]/.test(n.nodeType === 3 ? n.nodeValue : n.textContent); })) {
+        var sp = document.createElement('span'); sp.className = 'jz-tx';
+        run[0].parentNode.insertBefore(sp, run[0]);
+        run.forEach(function (n) { sp.appendChild(n); });
+      }
+      run = [];
+    };
+    kids.forEach(function (n) {
+      var inline = n.nodeType === 3 || (n.nodeType === 1 && JAZ_F_INLINE.test(n.tagName) && !n.matches(JAZ_F_SEL) && !n.querySelector(JAZ_F_SEL + ',div,ul,ol,table,p'));
+      if (inline) run.push(n); else flush();
+    });
+    flush();
+  }
+}
+var jzfEls = null;
+function jzfCollect() {
+  if (jzfEls) return jzfEls;
+  jzfWrap(document.body);
+  var all = Array.prototype.slice.call(document.querySelectorAll(JAZ_F_SEL));
+  jzfEls = all.filter(function (el) { return !el.closest('.jz-lang,script,style') && !el.querySelector(JAZ_F_SEL); });
+  jzfEls.forEach(function (el) { el.__jzFr = el.innerHTML; });
+  return jzfEls;
+}
+function jzfApply(lang) {
+  if (JAZ_F_LANGS.indexOf(lang) < 0) lang = 'fr';
+  var ui = JAZ_F_UI[lang] || JAZ_F_UI.fr;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  jzfCollect().forEach(function (el) {
+    var row = JAZ_F_I18N[jzfNorm(el.__jzFr)];
+    el.innerHTML = (lang !== 'fr' && row && row[lang]) ? row[lang] : el.__jzFr;
+  });
+  var pw = document.getElementById('jazPwdInput');
+  if (pw && ui.pwPh) pw.placeholder = ui.pwPh;
+  document.title = ui.title;
+  document.querySelectorAll('a[data-dl]').forEach(function (a) { a.setAttribute('download', a.getAttribute('data-dl').replace('{L}', lang.toUpperCase())); });
+  var opt = document.querySelector('.lang-option[data-lang="' + lang + '"]');
+  document.querySelectorAll('.lang-option').forEach(function (b) { b.classList.toggle('active', b === opt); });
+  if (opt) {
+    document.getElementById('curFlag').innerHTML = opt.querySelector('.option-flag').innerHTML;
+    document.getElementById('curCode').textContent = lang.toUpperCase();
+  }
+  try { localStorage.setItem('jaz_selected_lang', lang); } catch (e) {}
+}
+function selectLanguage(lang) { jzfApply(lang); document.getElementById('langWrap').classList.remove('open'); }
+(function () {
+  var wrap = document.getElementById('langWrap'), btn = document.getElementById('langBtn');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = wrap.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) wrap.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') wrap.classList.remove('open'); });
+  var saved = 'fr';
+  try { saved = localStorage.getItem('jaz_selected_lang') || 'fr'; } catch (e) {}
+  jzfApply(saved);
+})();
+</script>
 </body>
 </html>

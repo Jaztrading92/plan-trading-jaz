@@ -173,18 +173,112 @@
   }
 </style>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<script type="text/javascript">
-function jazSetLanguage(lang){
-  document.documentElement.setAttribute('lang', lang);
-  document.querySelectorAll('.lang-content').forEach(function(el){
-    el.style.display = (el.getAttribute('data-lang') === lang) ? 'block' : 'none';
-  });
-  var sel = document.querySelector('.lang-select');
-  if (sel) sel.value = lang;
-}
-</script>
+<style>
+  .jz-lang{position:fixed;top:16px;right:16px;z-index:100000;font-family:"Source Serif 4",Georgia,serif}
+  [dir="rtl"] .jz-lang{right:auto;left:16px}
+  .jz-lang .lang-btn{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:none;background:#153840;color:#fff;font-family:inherit;font-weight:700;font-size:.85rem;letter-spacing:.03em;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+  .jz-lang .lang-btn .chev{width:12px;height:12px;transition:transform .2s}
+  .jz-lang.open .lang-btn .chev{transform:rotate(180deg)}
+  .jz-lang .lang-menu{position:absolute;top:calc(100% + 10px);inset-inline-end:0;width:250px;max-width:calc(100vw - 32px);padding:10px;border-radius:14px;background:#fff;border:1px solid #DCD2B8;box-shadow:0 20px 50px -10px rgba(0,0,0,.35);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s ease}
+  .jz-lang.open .lang-menu{opacity:1;visibility:visible;transform:none}
+  .jz-lang .lang-menu-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:#5B5548;padding:4px 6px 10px}
+  .jz-lang .lang-options-grid{display:grid;grid-template-columns:1fr;gap:2px;max-height:60vh;overflow-y:auto}
+  .jz-lang .lang-option{display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;border-radius:9px;background:transparent;color:#2A2620;text-align:start;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer}
+  .jz-lang .lang-option:hover,.jz-lang .lang-option.active{background:#E8F1F5;color:#153840}
+  .jz-lang .lang-option .option-name{flex:1}
+  .jz-lang .lang-option .option-code{font-size:11px;font-weight:700;color:#5B5548}
+  [dir="rtl"] .lecon ul,[dir="rtl"] .lecon ol{padding-left:0;padding-right:1.4rem}
+  [dir="rtl"] .exemple,[dir="rtl"] .callout{border-left:none;border-right:3px solid var(--ember)}
+  [dir="rtl"] .callout{border-right-color:var(--pine-soft)}
+  [dir="rtl"] .checklist li{padding:.55rem 2.1rem .55rem 0}
+  [dir="rtl"] .checklist li::before{left:auto;right:0}
+  [dir="rtl"] thead th{text-align:right}
+  @media (max-width:640px){.jz-lang{top:10px;right:10px}[dir="rtl"] .jz-lang{left:10px}
+    table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+</style>
+<div class="jz-lang" id="langWrap">
+  <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+    <span id="curFlag"></span><span id="curCode">FR</span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <div class="lang-menu" id="langMenu">
+    <div class="lang-menu-title">CHOISIR LA LANGUE / SELECT LANGUAGE</div>
+    <div class="lang-options-grid">
+                <button class="lang-option active" data-lang="fr" onclick="selectLanguage('fr')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#fff" d="M0 0h640v480H0z"/><path fill="#002654" d="M0 0h213.3v480H0z"/><path fill="#ce1126" d="M426.7 0H640v480H426.7z"/></g></svg></span>
+                  <span class="option-name">Français</span>
+                  <span class="option-code">FR</span>
+                </button>
+                <button class="lang-option" data-lang="en" onclick="selectLanguage('en')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#012169" d="M0 0h640v480H0z"/><path fill="#fff" d="m75 0 245 180L565 0h75v60L435 240l205 180v60h-75L320 300 75 480H0v-60l205-180L0 60V0h75z"/><path fill="#C8102E" d="m424 288 216 158v34h-46L378 300l46-12zM0 480l196-144h46L26 480H0zM640 0 444 144h-46L614 0h26zM0 0l216 158-46 12L0 34V0z"/><path fill="#fff" d="M240 0h160v480H240zM0 160h640v160H0z"/><path fill="#C8102E" d="M266 0h108v480H266zM0 186h640v108H0z"/></svg></span>
+                  <span class="option-name">English</span>
+                  <span class="option-code">EN</span>
+                </button>
+                <button class="lang-option" data-lang="es" onclick="selectLanguage('es')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#c60b1e" d="M0 0h640v480H0z"/><path fill="#ffc400" d="M0 120h640v240H0z"/></svg></span>
+                  <span class="option-name">Español</span>
+                  <span class="option-code">ES</span>
+                </button>
+                <button class="lang-option" data-lang="ar" onclick="selectLanguage('ar')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#006c35" d="M0 0h640v480H0z"/><path fill="#fff" d="M120 280h400v20H120zM220 200h200v30H220z"/></svg></span>
+                  <span class="option-name">العربية</span>
+                  <span class="option-code">AR</span>
+                </button>
+                <button class="lang-option" data-lang="zh" onclick="selectLanguage('zh')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#de2910" d="M0 0h640v480H0z"/><polygon fill="#ffde00" points="160,80 178,136 238,136 190,172 208,228 160,192 112,228 130,172 82,136 142,136"/></svg></span>
+                  <span class="option-name">中文 (Chinois)</span>
+                  <span class="option-code">ZH</span>
+                </button>
+                <button class="lang-option" data-lang="de" onclick="selectLanguage('de')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#000" d="M0 0h640v160H0z"/><path fill="#d00" d="M0 160h640v160H0z"/><path fill="#ffce00" d="M0 320h640v160H0z"/></svg></span>
+                  <span class="option-name">Deutsch</span>
+                  <span class="option-code">DE</span>
+                </button>
+                <button class="lang-option" data-lang="pt" onclick="selectLanguage('pt')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#ff0000" d="M0 0h640v480H0z"/><path fill="#006600" d="M0 0h256v480H0z"/><circle cx="256" cy="240" r="80" fill="#ffff00"/></svg></span>
+                  <span class="option-name">Português</span>
+                  <span class="option-code">PT</span>
+                </button>
+                <button class="lang-option" data-lang="ru" onclick="selectLanguage('ru')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#fff" d="M0 0h640v160H0z"/><path fill="#0039a6" d="M0 160h640v160H0z"/><path fill="#d52b1e" d="M0 320h640v160H0z"/></svg></span>
+                  <span class="option-name">Русский</span>
+                  <span class="option-code">RU</span>
+                </button>
+                <button class="lang-option" data-lang="it" onclick="selectLanguage('it')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#fff" d="M0 0h640v480H0z"/><path fill="#009246" d="M0 0h213.3v480H0z"/><path fill="#ce2b37" d="M426.7 0H640v480H426.7z"/></g></svg></span>
+                  <span class="option-name">Italiano</span>
+                  <span class="option-code">IT</span>
+                </button>
+                <button class="lang-option" data-lang="ja" onclick="selectLanguage('ja')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#fff" d="M0 0h640v480H0z"/><circle cx="320" cy="240" r="144" fill="#bc002d"/></svg></span>
+                  <span class="option-name">日本語 (Japonais)</span>
+                  <span class="option-code">JA</span>
+                </button>
+                <button class="lang-option" data-lang="hi" onclick="selectLanguage('hi')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#f93" d="M0 0h640v160H0z"/><path fill="#fff" d="M0 160h640v160H0z"/><path fill="#128807" d="M0 320h640v160H0z"/><circle cx="320" cy="240" r="50" fill="none" stroke="#008" stroke-width="10"/></svg></span>
+                  <span class="option-name">हिन्दी (Hindi)</span>
+                  <span class="option-code">HI</span>
+                </button>
+              </div>
+  </div>
+</div>
+
+<style>
+  .jz-lang{font-family:"Source Sans Pro","Segoe UI",Arial,sans-serif}
+  .jz-lang .lang-btn{background:#0A1628; border:1px solid rgba(255,255,255,.25)}
+  [dir="rtl"] .bonus-card,[dir="rtl"] .card{border-left:1px solid var(--line); border-right:4px solid var(--navy)}
+  [dir="rtl"] .note{border-left:none; border-right:3px solid var(--blue); border-radius:8px 0 0 8px}
+  [dir="rtl"] .warn{border-left:none; border-right:3px solid var(--red); border-radius:6px 0 0 6px}
+  [dir="rtl"] .field:nth-child(odd){border-right:none; border-left:1px solid var(--line)}
+  @media(max-width:600px){ [dir="rtl"] .field:nth-child(odd){border-left:none} }
+  @media(max-width:560px){ [dir="rtl"] .bonus-card{text-align:right} }
+  @media print{ .jz-lang{display:none} }
+</style>
+
+
 
 <div class="lang-content" data-lang="fr">
 
@@ -192,13 +286,7 @@ function jazSetLanguage(lang){
   <div class="wrap">
     <div class="cover-top">
       <div class="brandname">JAZ <b>TRADING</b> · FIMC</div>
-      <div class="lang-box">
-        <span class="lang-label">Langue</span>
-        <select class="lang-select" onchange="jazSetLanguage(this.value)">
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
-      </div>
+      
     </div>
     <div class="cover-body">
       <span class="badge">BONUS 2</span>
@@ -282,101 +370,103 @@ function jazSetLanguage(lang){
 <footer><b>JAZ TRADING FIMC</b> — Bonus 2 du Plan de Trading Professionnel</footer>
 </div>
 
-<div class="lang-content" data-lang="en" style="display:none">
 
-<div class="cover">
-  <div class="wrap">
-    <div class="cover-top">
-      <div class="brandname">JAZ <b>TRADING</b> · FIMC</div>
-      <div class="lang-box">
-        <span class="lang-label">Language</span>
-        <select class="lang-select" onchange="jazSetLanguage(this.value)">
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-    </div>
-    <div class="cover-body">
-      <span class="badge">BONUS 2</span>
-      <h1>Monthly review checklist</h1>
-      <div class="rule"></div>
-      <p class="sub">Once a month, this review checks that the Professional Trading Plan was followed day to day — and above all, that it still fits the reality of this month's trading.</p>
-    </div>
-  </div>
-</div>
 
-<div class="content">
-  <div class="wrap">
-
-    <div class="fields">
-      <div class="field"><b>Month</b><span class="line"></span></div>
-      <div class="field"><b>Starting capital</b><span class="line"></span></div>
-      <div class="field"><b>End-of-month capital</b><span class="line"></span></div>
-      <div class="field"><b>Performance for the month (%)</b><span class="line"></span></div>
-      <div class="field"><b>Account type</b><span class="line"></span></div>
-      <div class="field"><b>Profile used (Safe / Aggressive)</b><span class="line"></span></div>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>1</span></span>Actual vs expected frequency</h3>
-      <ul class="check">
-        <li><span class="box"></span>Number of positions taken this month: _______</li>
-        <li><span class="box"></span>This number matches the expected frequency of the chosen profile (Safe: 1 position every 1 to 4 days · Aggressive: 1 to 4 positions per day).</li>
-        <li><span class="box"></span>If the gap is significant, the cause is clearly identified (overtrading, undertrading, atypical market, absence, etc.).</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>2</span></span>Drawdown and risk management for the month</h3>
-      <ul class="check">
-        <li><span class="box"></span>Maximum drawdown reached this month: _______ %</li>
-        <li><span class="box"></span>This figure stays within the limits planned for this capital and profile.</li>
-        <li><span class="box"></span>The risk-reduction rules (3 losses → R/2, 5 losses → 30% of R) were applied correctly every time they should have been.</li>
-        <li><span class="box"></span>No daily or weekly loss limit was breached this month.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>3</span></span>Profit management and current risk tier</h3>
-      <ul class="check">
-        <li><span class="box"></span>Profit lock-in (4% / 6% / 8% / 10% tiers) was applied correctly, with the 3-consecutive-wins safety margin.</li>
-        <li><span class="box"></span>The risk tier in effect at month's end is consistent with recent history (no rushed step-up after a single winning position).</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>4</span></span>Discipline and adherence to the plan</h3>
-      <ul class="check">
-        <li><span class="box"></span>Number of off-plan positions (impulsive, unvalidated) taken this month: _______</li>
-        <li><span class="box"></span>The before-position checklist (Bonus 1) was used systematically.</li>
-        <li><span class="box"></span>The trading journal was kept up to date for every position.</li>
-      </ul>
-      <div class="note">A one-off slip is not serious. A slip that repeats every month signals a discipline or plan issue to fix.</div>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>5</span></span>Is the profile still the right one?</h3>
-      <ul class="check">
-        <li><span class="box"></span>The chosen profile (Safe or Aggressive) still matches how I actually traded this month.</li>
-        <li><span class="box"></span>My availability and state of mind this month are compatible with this profile's frequency.</li>
-        <li><span class="box"></span>No change in strategy, market, or personal life calls for an adjustment to the plan.</li>
-      </ul>
-      <div class="warn">A profile that no longer matches the reality of trading should be adjusted before next month — never endured in silence.</div>
-    </div>
-
-    <div class="card">
-      <h3><span class="num"><span>6</span></span>Decision for next month</h3>
-      <ul class="check">
-        <li><span class="box"></span>I continue with the same capital, the same profile, and the same risk parameters.</li>
-        <li><span class="box"></span>I'm adjusting one or more parameters — which, and why: ___________________________</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-
-<footer><b>JAZ TRADING FIMC</b> — Bonus 2 of the Professional Trading Plan</footer>
-</div>
-
+<script>
+// TRADUCTION 11 LANGUES DU PLAN DE TRADING : le français est la source, chaque bloc de texte est remplacé selon la langue choisie
+var JAZ_F_I18N = {"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC":{"ar":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","de":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","en":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","es":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","hi":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","it":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","ja":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","pt":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","ru":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","zh":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC"},"BONUS 2":{"ar":"المكافأة 2","de":"BONUS 2","en":"BONUS 2","es":"BONUS 2","hi":"बोनस 2","it":"BONUS 2","ja":"ボーナス2","pt":"BÓNUS 2","ru":"БОНУС 2","zh":"附赠2"},"Checklist de révision mensuelle":{"ar":"قائمة المراجعة الشهرية","de":"Checkliste für den Monatsrückblick","en":"Monthly review checklist","es":"Checklist de revisión mensual","hi":"मासिक समीक्षा चेकलिस्ट","it":"Checklist di revisione mensile","ja":"月次レビューのチェックリスト","pt":"Checklist de revisão mensal","ru":"Чек-лист ежемесячного разбора","zh":"月度复盘检查清单"},"Une fois par mois, cette revue vérifie que le Plan de Trading Professionnel a été respecté au quotidien — et surtout, qu\u0027il reste adapté à la réalité du trading de ce mois-ci.":{"ar":"مرة كل شهر، تتحقق هذه المراجعة من أن خطة التداول الاحترافية احتُرمت يوميًا — والأهم، من أنها لا تزال مناسبة لواقع التداول في هذا الشهر.","de":"Einmal im Monat prüft dieser Rückblick, ob der Professionelle Trading-Plan im Alltag eingehalten wurde — und vor allem, ob er noch zur Trading-Realität dieses Monats passt.","en":"Once a month, this review checks that the Professional Trading Plan was followed day to day — and above all, that it still fits the reality of this month\u0027s trading.","es":"Una vez al mes, esta revisión comprueba que el Plan de Trading Profesional se ha respetado en el día a día y, sobre todo, que sigue adaptado a la realidad del trading de este mes.","hi":"महीने में एक बार यह समीक्षा जांचती है कि पेशेवर ट्रेडिंग प्लान का रोज़ पालन हुआ — और सबसे ज़रूरी, कि वह इस महीने की ट्रेडिंग की असलियत के लिए अब भी सही है।","it":"Una volta al mese, questa revisione verifica che il Piano di Trading Professionale sia stato rispettato giorno per giorno — e soprattutto che resti adatto alla realtà del trading di questo mese.","ja":"月に一度、このレビューで、プロのトレードプランが日々守られていたか — そして何より、今月のトレードの実情に今も合っているかを確認します。","pt":"Uma vez por mês, esta revisão verifica que o Plano de Trading Profissional foi respeitado no dia a dia — e, sobretudo, que continua adaptado à realidade do trading deste mês.","ru":"Раз в месяц этот разбор проверяет, что Профессиональный торговый план соблюдался каждый день, — и, главное, что он по-прежнему соответствует реальности торговли в этом месяце.","zh":"每月一次，这份复盘检查专业交易计划是否在日常中得到遵守——更重要的是，它是否仍然适合本月的交易实际。"},"Mois":{"ar":"الشهر","de":"Monat","en":"Month","es":"Mes","hi":"महीना","it":"Mese","ja":"月","pt":"Mês","ru":"Месяц","zh":"月份"},"Capital de départ":{"ar":"رأس المال في البداية","de":"Anfangskapital","en":"Starting capital","es":"Capital inicial","hi":"शुरुआती पूंजी","it":"Capitale iniziale","ja":"月初の資金","pt":"Capital inicial","ru":"Начальный капитал","zh":"期初资金"},"Capital de fin de mois":{"ar":"رأس المال في نهاية الشهر","de":"Kapital am Monatsende","en":"End-of-month capital","es":"Capital a final de mes","hi":"महीने के अंत की पूंजी","it":"Capitale a fine mese","ja":"月末の資金","pt":"Capital no fim do mês","ru":"Капитал на конец месяца","zh":"月末资金"},"Performance du mois (%)":{"ar":"أداء الشهر (%)","de":"Monatsperformance (%)","en":"Performance for the month (%)","es":"Rendimiento del mes (%)","hi":"महीने का प्रदर्शन (%)","it":"Performance del mese (%)","ja":"今月の成績（％）","pt":"Desempenho do mês (%)","ru":"Результат месяца (%)","zh":"本月收益（%）"},"Type de compte":{"ar":"نوع الحساب","de":"Kontotyp","en":"Account type","es":"Tipo de cuenta","hi":"अकाउंट का प्रकार","it":"Tipo di conto","ja":"口座タイプ","pt":"Tipo de conta","ru":"Тип счёта","zh":"账户类型"},"Profil utilisé (Safe / Agressif)":{"ar":"الملف المستخدم (Safe / هجومي)","de":"Verwendetes Profil (Safe / Aggressiv)","en":"Profile used (Safe / Aggressive)","es":"Perfil utilizado (Safe / Agresivo)","hi":"इस्तेमाल की गई प्रोफ़ाइल (Safe / आक्रामक)","it":"Profilo usato (Safe / Aggressivo)","ja":"使用したプロファイル（Safe / アグレッシブ）","pt":"Perfil usado (Safe / Agressivo)","ru":"Использованный профиль (Safe / Агрессивный)","zh":"所用类型（稳健型Safe / 激进型）"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eFréquence réelle vs fréquence attendue":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eالتكرار الفعلي مقابل التكرار المتوقع","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eTatsächliche vs. erwartete Frequenz","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eActual vs expected frequency","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eFrecuencia real frente a frecuencia esperada","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eअसली आवृत्ति बनाम अपेक्षित आवृत्ति","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eFrequenza reale vs frequenza attesa","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003e実際の頻度と想定した頻度","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eFrequência real vs frequência esperada","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003eРеальная частота и ожидаемая частота","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e1\u003c/span\u003e\u003c/span\u003e实际频率与预期频率"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eNombre de positions prises ce mois-ci : _______":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eعدد الصفقات المفتوحة هذا الشهر: _______","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eAnzahl der Positionen in diesem Monat: _______","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNumber of positions taken this month: _______","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNúmero de posiciones tomadas este mes: _______","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस महीने ली गई पोज़ीशन की संख्या: _______","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNumero di posizioni prese questo mese: _______","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e今月取ったポジション数：_______","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNúmero de posições tomadas este mês: _______","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЧисло позиций за этот месяц: _______","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本月开仓数量：_______"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eCe nombre correspond à la fréquence attendue du profil choisi (Safe : 1 position tous les 1 à 4 jours · Agressif : 1 à 4 positions par jour).":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eهذا العدد يطابق التكرار المتوقع للملف المختار (Safe: صفقة كل 1 إلى 4 أيام · هجومي: من 1 إلى 4 صفقات يوميًا).","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDiese Zahl entspricht der erwarteten Frequenz des gewählten Profils (Safe: 1 Position alle 1 bis 4 Tage · Aggressiv: 1 bis 4 Positionen pro Tag).","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThis number matches the expected frequency of the chosen profile (Safe: 1 position every 1 to 4 days · Aggressive: 1 to 4 positions per day).","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEste número corresponde a la frecuencia esperada del perfil elegido (Safe: 1 posición cada 1 a 4 días · Agresivo: 1 a 4 posiciones al día).","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eयह संख्या चुनी गई प्रोफ़ाइल की अपेक्षित आवृत्ति से मेल खाती है (Safe: हर 1 से 4 दिन में 1 पोज़ीशन · आक्रामक: दिन में 1 से 4 पोज़ीशन)।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eQuesto numero corrisponde alla frequenza attesa del profilo scelto (Safe: 1 posizione ogni 1-4 giorni · Aggressivo: 1-4 posizioni al giorno).","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこの数は、選んだプロファイルの想定頻度に合っている（Safe：1〜4日に1ポジション · アグレッシブ：1日1〜4ポジション）。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEste número corresponde à frequência esperada do perfil escolhido (Safe: 1 posição a cada 1 a 4 dias · Agressivo: 1 a 4 posições por dia).","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЭто число соответствует ожидаемой частоте выбранного профиля (Safe: 1 позиция раз в 1–4 дня · Агрессивный: 1–4 позиции в день).","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e这个数量符合所选类型的预期频率（稳健型：每1到4天1笔 · 激进型：每天1到4笔）。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eSi l\u0027écart est important, la cause est clairement identifiée (surtrading, sous-trading, marché atypique, absence, etc.).":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eإذا كان الفارق كبيرًا، فالسبب محدد بوضوح (إفراط في التداول، قلة التداول، سوق غير معتاد، غياب، إلخ).","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eBei einer großen Abweichung ist die Ursache klar erkannt (Overtrading, Undertrading, untypischer Markt, Abwesenheit usw.).","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIf the gap is significant, the cause is clearly identified (overtrading, undertrading, atypical market, absence, etc.).","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSi la diferencia es importante, la causa está claramente identificada (sobretrading, infratrading, mercado atípico, ausencia, etc.).","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eअगर अंतर बड़ा है, तो उसकी वजह साफ पहचानी गई है (ओवरट्रेडिंग, कम ट्रेडिंग, असामान्य बाज़ार, अनुपस्थिति, आदि)।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSe lo scarto è importante, la causa è chiaramente identificata (overtrading, undertrading, mercato atipico, assenza, ecc.).","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e差が大きい場合、その原因がはっきりわかっている（オーバートレード、トレード不足、異例の相場、不在など）。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eSe a diferença for grande, a causa está claramente identificada (sobretrading, subtrading, mercado atípico, ausência, etc.).","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЕсли расхождение большое, его причина чётко определена (овертрейдинг, слишком мало сделок, нетипичный рынок, отсутствие и т. д.).","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e如果差距较大，原因已明确找到（过度交易、交易过少、市场异常、缺席等）。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eDrawdown et gestion du risque du mois":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eالتراجع وإدارة المخاطر خلال الشهر","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eDrawdown und Risikomanagement des Monats","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eDrawdown and risk management for the month","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eDrawdown y gestión del riesgo del mes","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eमहीने का ड्रॉडाउन और जोखिम प्रबंधन","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eDrawdown e gestione del rischio del mese","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003e今月のドローダウンとリスク管理","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eDrawdown e gestão do risco do mês","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003eПросадка и управление рисками за месяц","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e2\u003c/span\u003e\u003c/span\u003e本月回撤与风险管理"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eDrawdown maximal atteint ce mois-ci : _______ %":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eأقصى تراجع بُلغ هذا الشهر: _______ %","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIn diesem Monat erreichter maximaler Drawdown: _______ %","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eMaximum drawdown reached this month: _______ %","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDrawdown máximo alcanzado este mes: _______ %","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस महीने पहुंचा अधिकतम ड्रॉडाउन: _______ %","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDrawdown massimo raggiunto questo mese: _______ %","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e今月の最大ドローダウン：_______ ％","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDrawdown máximo atingido este mês: _______ %","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eМаксимальная просадка в этом месяце: _______ %","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本月达到的最大回撤：_______ %"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eCe chiffre reste dans les limites prévues par le plan pour ce capital et ce profil.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eهذا الرقم ضمن الحدود التي تقررها الخطة لرأس المال هذا وهذا الملف.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDiese Zahl bleibt innerhalb der vom Plan für dieses Kapital und dieses Profil vorgesehenen Grenzen.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThis figure stays within the limits planned for this capital and profile.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEsta cifra se mantiene dentro de los límites previstos por el plan para este capital y este perfil.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eयह आंकड़ा इस पूंजी और प्रोफ़ाइल के लिए प्लान में तय सीमाओं के भीतर है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eQuesto dato resta nei limiti previsti dal piano per questo capitale e questo profilo.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eこの数字は、この資金とプロファイルについてプランで定めた範囲内に収まっている。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEste número fica dentro dos limites previstos pelo plano para este capital e este perfil.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЭта цифра остаётся в пределах, предусмотренных планом для этого капитала и профиля.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e这个数字在计划为该资金和类型设定的范围之内。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLes règles de réduction du risque (3 pertes → R/2, 5 pertes → 30 % de R) ont bien été appliquées chaque fois qu\u0027elles devaient l\u0027être.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eطُبّقت قواعد خفض المخاطرة (3 خسائر ← R/2، 5 خسائر ← 30% من R) في كل مرة كان يجب تطبيقها.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDie Regeln zur Risikoreduzierung (3 Verluste → R/2, 5 Verluste → 30 % von R) wurden jedes Mal angewandt, wenn es nötig war.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe risk-reduction rules (3 losses → R/2, 5 losses → 30% of R) were applied correctly every time they should have been.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLas reglas de reducción del riesgo (3 pérdidas → R/2, 5 pérdidas → 30 % de R) se han aplicado cada vez que correspondía.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eजोखिम घटाने के नियम (3 नुकसान → R/2, 5 नुकसान → R का 30%) हर बार ज़रूरत पड़ने पर लागू किए गए।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe regole di riduzione del rischio (3 perdite → R/2, 5 perdite → 30% di R) sono state applicate ogni volta che era necessario.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eリスク引き下げルール（3敗 → R/2、5敗 → Rの30％）を、必要なときは毎回きちんと適用した。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eAs regras de redução do risco (3 perdas → R/2, 5 perdas → 30 % de R) foram aplicadas sempre que deviam.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eПравила снижения риска (3 убытка → R/2, 5 убытков → 30 % от R) применялись каждый раз, когда это было нужно.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e降低风险的规则（3笔亏损 → R/2，5笔亏损 → R的30%）在每次需要时都得到了执行。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eAucune limite de perte quotidienne ou hebdomadaire n\u0027a été dépassée ce mois-ci.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eلم يُتجاوز أي حد للخسارة اليومية أو الأسبوعية هذا الشهر.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIn diesem Monat wurde keine tägliche oder wöchentliche Verlustgrenze überschritten.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNo daily or weekly loss limit was breached this month.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNo se ha superado ningún límite de pérdida diaria o semanal este mes.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस महीने दैनिक या साप्ताहिक नुकसान की कोई सीमा पार नहीं हुई।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNessun limite di perdita giornaliero o settimanale è stato superato questo mese.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e今月、1日・1週間の損失上限を一度も超えなかった。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNenhum limite de perda diária ou semanal foi ultrapassado este mês.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eВ этом месяце не был превышен ни дневной, ни недельный лимит убытка.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本月没有突破任何每日或每周亏损上限。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eGestion du profit et palier de risque actuel":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eإدارة الأرباح ومستوى المخاطرة الحالي","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eGewinnmanagement und aktuelle Risikostufe","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eProfit management and current risk tier","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eGestión del beneficio y escalón de riesgo actual","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eमुनाफा प्रबंधन और मौजूदा जोखिम स्तर","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eGestione del profitto e scaglione di rischio attuale","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003e利益管理と現在のリスク段階","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eGestão do lucro e patamar de risco atual","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003eУправление прибылью и текущая ступень риска","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e3\u003c/span\u003e\u003c/span\u003e利润管理与当前风险档位"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa sécurisation du profit (paliers 4 % / 6 % / 8 % / 10 %) a été appliquée correctement, avec la marge de sécurité des 3 positions gagnantes consécutives.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eطُبّق تأمين الأرباح (مستويات 4% / 6% / 8% / 10%) بشكل صحيح، مع هامش الأمان المتمثل في 3 صفقات رابحة متتالية.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDie Gewinnsicherung (Stufen 4 % / 6 % / 8 % / 10 %) wurde korrekt angewandt, mit dem Sicherheitspuffer von 3 Gewinnpositionen in Folge.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eProfit lock-in (4% / 6% / 8% / 10% tiers) was applied correctly, with the 3-consecutive-wins safety margin.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa protección del beneficio (escalones 4 % / 6 % / 8 % / 10 %) se ha aplicado correctamente, con el margen de seguridad de 3 posiciones ganadoras consecutivas.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eमुनाफा सुरक्षित करना (4% / 6% / 8% / 10% के स्तर) सही तरीके से लागू हुआ, लगातार 3 जीतने वाली पोज़ीशन के सुरक्षा मार्जिन के साथ।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa messa in sicurezza del profitto (scaglioni 4% / 6% / 8% / 10%) è stata applicata correttamente, con il margine di sicurezza delle 3 posizioni vincenti consecutive.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e利益確保（4％ / 6％ / 8％ / 10％の段階）を、3連勝という安全マージンを守って正しく適用した。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eA garantia do lucro (patamares 4 % / 6 % / 8 % / 10 %) foi aplicada corretamente, com a margem de segurança das 3 posições ganhadoras consecutivas.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eФиксация прибыли (ступени 4 % / 6 % / 8 % / 10 %) применялась правильно, с запасом безопасности в 3 прибыльные позиции подряд.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e利润锁定（4% / 6% / 8% / 10%档位）执行正确，并遵守了连续3笔盈利的安全边际。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe palier de risque en cours en fin de mois est cohérent avec l\u0027historique récent (pas de remontée précipitée après une seule position gagnante).":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eمستوى المخاطرة الساري في نهاية الشهر متسق مع السجل الأخير (دون رفع متسرّع بعد صفقة رابحة واحدة).","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDie Risikostufe am Monatsende passt zum jüngsten Verlauf (kein überstürzter Anstieg nach nur einer Gewinnposition).","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe risk tier in effect at month\u0027s end is consistent with recent history (no rushed step-up after a single winning position).","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl escalón de riesgo vigente a final de mes es coherente con el historial reciente (sin subidas precipitadas tras una sola posición ganadora).","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eमहीने के अंत में चल रहा जोखिम स्तर हाल के रिकॉर्ड से मेल खाता है (सिर्फ एक जीत के बाद जल्दबाज़ी में बढ़ोतरी नहीं)।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLo scaglione di rischio in vigore a fine mese è coerente con lo storico recente (nessuna risalita affrettata dopo una sola posizione vincente).","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e月末時点のリスク段階が、最近の履歴と整合している（1回勝っただけで慌てて上げていない）。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO patamar de risco em vigor no fim do mês é coerente com o histórico recente (sem subidas precipitadas depois de uma única posição ganhadora).","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eСтупень риска на конец месяца соответствует недавней истории (без поспешного повышения после одной прибыльной позиции).","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e月末所处的风险档位与近期记录相符（没有在仅1笔盈利后就仓促上调）。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eDiscipline et respect du plan":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eالانضباط واحترام الخطة","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eDisziplin und Einhaltung des Plans","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eDiscipline and adherence to the plan","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eDisciplina y respeto del plan","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eअनुशासन और प्लान का पालन","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eDisciplina e rispetto del piano","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003e規律とプランの順守","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eDisciplina e respeito pelo plano","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003eДисциплина и соблюдение плана","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e4\u003c/span\u003e\u003c/span\u003e纪律与遵守计划"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eNombre de positions prises hors plan (impulsives, non validées) ce mois-ci : _______":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eعدد الصفقات المفتوحة خارج الخطة (اندفاعية، غير مُتحقق منها) هذا الشهر: _______","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eAnzahl der Positionen außerhalb des Plans (impulsiv, nicht geprüft) in diesem Monat: _______","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNumber of off-plan positions (impulsive, unvalidated) taken this month: _______","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNúmero de posiciones tomadas fuera del plan (impulsivas, no validadas) este mes: _______","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस महीने प्लान से बाहर (आवेग में, बिना जांचे) ली गई पोज़ीशन की संख्या: _______","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNumero di posizioni prese fuori piano (impulsive, non convalidate) questo mese: _______","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e今月、プラン外（衝動的、未検証）で取ったポジション数：_______","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNúmero de posições tomadas fora do plano (impulsivas, não validadas) este mês: _______","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЧисло позиций вне плана (импульсивных, непроверенных) за этот месяц: _______","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e本月计划外（冲动、未经确认）开仓数量：_______"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa checklist avant-position (Bonus 1) a été utilisée de façon systématique.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eاستُخدمت قائمة التحقق قبل الصفقة (المكافأة 1) بشكل منهجي.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDie Checkliste vor jeder Position (Bonus 1) wurde systematisch genutzt.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe before-position checklist (Bonus 1) was used systematically.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa checklist previa a cada posición (Bonus 1) se ha usado de forma sistemática.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eपोज़ीशन से पहले की चेकलिस्ट (बोनस 1) हर बार इस्तेमाल हुई।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa checklist prima di ogni posizione (Bonus 1) è stata usata in modo sistematico.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eポジション前のチェックリスト（ボーナス1）を毎回使った。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eA checklist antes de cada posição (Bónus 1) foi usada de forma sistemática.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eЧек-лист перед позицией (Бонус 1) использовался систематически.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e开仓前检查清单（附赠1）得到了系统性使用。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe journal de trading a été tenu à jour pour chaque position.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eحُدّثت يوميات التداول لكل صفقة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDas Trading-Journal wurde für jede Position aktuell gehalten.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe trading journal was kept up to date for every position.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl diario de trading se ha mantenido al día para cada posición.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eहर पोज़ीशन के लिए ट्रेडिंग जर्नल अपडेट रखा गया।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIl diario di trading è stato tenuto aggiornato per ogni posizione.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003eすべてのポジションについてトレード日誌を最新の状態に保った。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO diário de trading foi mantido atualizado para cada posição.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eТорговый журнал вёлся по каждой позиции.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e每笔仓位都及时记入了交易日志。"},"Un écart isolé n\u0027est pas grave. Un écart qui se répète chaque mois signale un problème de discipline ou de plan à corriger.":{"ar":"الانحراف المنفرد ليس خطيرًا. أما الانحراف الذي يتكرر كل شهر فيدل على مشكلة في الانضباط أو في الخطة يجب تصحيحها.","de":"Eine einzelne Abweichung ist nicht schlimm. Eine Abweichung, die sich jeden Monat wiederholt, zeigt ein Disziplin- oder Planproblem, das behoben werden muss.","en":"A one-off slip is not serious. A slip that repeats every month signals a discipline or plan issue to fix.","es":"Una desviación aislada no es grave. Una desviación que se repite cada mes señala un problema de disciplina o de plan que hay que corregir.","hi":"एक बार का भटकाव गंभीर नहीं है। हर महीने दोहराया जाने वाला भटकाव अनुशासन या प्लान की ऐसी समस्या बताता है जिसे ठीक करना ज़रूरी है।","it":"Uno scarto isolato non è grave. Uno scarto che si ripete ogni mese segnala un problema di disciplina o di piano da correggere.","ja":"1回だけのずれは深刻ではありません。毎月繰り返されるずれは、直すべき規律やプランの問題を示しています。","pt":"Um desvio isolado não é grave. Um desvio que se repete todos os meses indica um problema de disciplina ou de plano a corrigir.","ru":"Единичное отклонение — не страшно. Отклонение, которое повторяется каждый месяц, сигнализирует о проблеме дисциплины или плана, которую нужно исправить.","zh":"偶尔一次偏差并不严重。每个月都重复出现的偏差，说明纪律或计划存在需要纠正的问题。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eLe profil est-il toujours le bon ?":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eهل لا يزال الملف مناسبًا؟","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eIst das Profil noch das richtige?","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eIs the profile still the right one?","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003e¿Sigue siendo el perfil adecuado?","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eक्या प्रोफ़ाइल अब भी सही है?","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eIl profilo è ancora quello giusto?","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eプロファイルは今も合っているか？","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eO perfil continua a ser o certo?","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003eПодходит ли ещё профиль?","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e5\u003c/span\u003e\u003c/span\u003e类型是否依然合适？"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eLe profil choisi (Safe ou Agressif) correspond toujours à ma façon réelle de trader ce mois-ci.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eالملف المختار (Safe أو هجومي) لا يزال يطابق طريقتي الفعلية في التداول هذا الشهر.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eDas gewählte Profil (Safe oder Aggressiv) entspricht noch meiner tatsächlichen Art zu traden in diesem Monat.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eThe chosen profile (Safe or Aggressive) still matches how I actually traded this month.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eEl perfil elegido (Safe o Agresivo) sigue correspondiendo a mi forma real de operar este mes.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eचुनी गई प्रोफ़ाइल (Safe या आक्रामक) अब भी इस महीने मेरे ट्रेड करने के असली तरीके से मेल खाती है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIl profilo scelto (Safe o Aggressivo) corrisponde ancora al mio modo reale di fare trading questo mese.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e選んだプロファイル（Safeまたはアグレッシブ）が、今月の実際のトレードの仕方に今も合っている。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eO perfil escolhido (Safe ou Agressivo) continua a corresponder à minha forma real de negociar este mês.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eВыбранный профиль (Safe или Агрессивный) по-прежнему соответствует тому, как я реально торговал в этом месяце.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e所选类型（稳健型或激进型）仍然符合我本月的实际交易方式。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eMa disponibilité et mon état d\u0027esprit du mois sont compatibles avec la fréquence de ce profil.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eوقتي المتاح وحالتي الذهنية هذا الشهر متوافقان مع تكرار هذا الملف.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eMeine Verfügbarkeit und meine Verfassung in diesem Monat passen zur Frequenz dieses Profils.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eMy availability and state of mind this month are compatible with this profile\u0027s frequency.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eMi disponibilidad y mi estado de ánimo del mes son compatibles con la frecuencia de este perfil.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eइस महीने मेरा उपलब्ध समय और मन की स्थिति इस प्रोफ़ाइल की आवृत्ति के अनुकूल है।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eLa mia disponibilità e il mio stato d\u0027animo del mese sono compatibili con la frequenza di questo profilo.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e今月の自分の時間の余裕と心の状態が、このプロファイルの取引頻度と合っている。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eA minha disponibilidade e o meu estado de espírito este mês são compatíveis com a frequência deste perfil.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eМоя занятость и моё состояние в этом месяце совместимы с частотой этого профиля.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e我本月的可用时间和心态与该类型的交易频率相匹配。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eAucun changement de stratégie, de marché ou de vie personnelle ne justifie un ajustement du plan.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eلا يوجد أي تغيير في الاستراتيجية أو السوق أو الحياة الشخصية يبرر تعديل الخطة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eKeine Änderung bei Strategie, Markt oder Privatleben rechtfertigt eine Anpassung des Plans.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNo change in strategy, market, or personal life calls for an adjustment to the plan.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNingún cambio de estrategia, de mercado o de vida personal justifica un ajuste del plan.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eरणनीति, बाज़ार या निजी जीवन में ऐसा कोई बदलाव नहीं जिससे प्लान बदलना पड़े।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNessun cambiamento di strategia, di mercato o di vita personale giustifica un adeguamento del piano.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e戦略・市場・私生活のどれにも、プランの調整が必要になる変化はない。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eNenhuma mudança de estratégia, de mercado ou de vida pessoal justifica um ajuste do plano.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eНикакие изменения в стратегии, на рынке или в личной жизни не требуют корректировки плана.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e策略、市场或个人生活没有任何变化需要调整计划。"},"Un profil qui ne correspond plus à la réalité du trading doit être ajusté avant le mois suivant — jamais subi en silence.":{"ar":"الملف الذي لم يعد يطابق واقع التداول يجب تعديله قبل الشهر التالي — لا تحمّله بصمت أبدًا.","de":"Ein Profil, das nicht mehr zur Trading-Realität passt, muss vor dem nächsten Monat angepasst werden — niemals stillschweigend hingenommen.","en":"A profile that no longer matches the reality of trading should be adjusted before next month — never endured in silence.","es":"Un perfil que ya no corresponde a la realidad del trading debe ajustarse antes del mes siguiente, nunca soportarse en silencio.","hi":"जो प्रोफ़ाइल ट्रेडिंग की असलियत से मेल नहीं खाती, उसे अगले महीने से पहले बदलना होगा — चुपचाप झेलना कभी नहीं।","it":"Un profilo che non corrisponde più alla realtà del trading va adeguato prima del mese successivo — mai subito in silenzio.","ja":"トレードの実情に合わなくなったプロファイルは、翌月までに調整しなければなりません — 黙って我慢してはいけません。","pt":"Um perfil que já não corresponde à realidade do trading deve ser ajustado antes do mês seguinte — nunca suportado em silêncio.","ru":"Профиль, который больше не соответствует реальности торговли, нужно скорректировать до следующего месяца — а не молча терпеть.","zh":"不再符合交易实际的类型必须在下个月之前调整——绝不能默默忍受。"},"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eDécision pour le mois prochain":{"ar":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eالقرار للشهر القادم","de":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eEntscheidung für den nächsten Monat","en":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eDecision for next month","es":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eDecisión para el mes que viene","hi":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eअगले महीने का फैसला","it":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eDecisione per il mese prossimo","ja":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003e来月に向けての決定","pt":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eDecisão para o próximo mês","ru":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003eРешение на следующий месяц","zh":"\u003cspan class=\"num\"\u003e\u003cspan\u003e6\u003c/span\u003e\u003c/span\u003e下个月的决定"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eJe continue avec le même capital, le même profil et les mêmes paramètres de risque.":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eأواصل بنفس رأس المال ونفس الملف ونفس معايير المخاطرة.","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIch mache mit demselben Kapital, demselben Profil und denselben Risikoparametern weiter.","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eI continue with the same capital, the same profile, and the same risk parameters.","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eContinúo con el mismo capital, el mismo perfil y los mismos parámetros de riesgo.","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eमैं उसी पूंजी, उसी प्रोफ़ाइल और उन्हीं जोखिम पैरामीटर के साथ जारी रखता हूं।","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eContinuo con lo stesso capitale, lo stesso profilo e gli stessi parametri di rischio.","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e同じ資金、同じプロファイル、同じリスクパラメーターで続ける。","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eContinuo com o mesmo capital, o mesmo perfil e os mesmos parâmetros de risco.","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eПродолжаю с тем же капиталом, тем же профилем и теми же параметрами риска.","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e我继续使用相同的资金、相同的类型和相同的风险参数。"},"\u003cspan class=\"box\"\u003e\u003c/span\u003eJ\u0027ajuste un ou plusieurs paramètres — lesquels et pourquoi : ___________________________":{"ar":"\u003cspan class=\"box\"\u003e\u003c/span\u003eأعدّل معيارًا أو أكثر — أيها ولماذا: ___________________________","de":"\u003cspan class=\"box\"\u003e\u003c/span\u003eIch passe einen oder mehrere Parameter an — welche und warum: ___________________________","en":"\u003cspan class=\"box\"\u003e\u003c/span\u003eI\u0027m adjusting one or more parameters — which, and why: ___________________________","es":"\u003cspan class=\"box\"\u003e\u003c/span\u003eAjusto uno o varios parámetros — cuáles y por qué: ___________________________","hi":"\u003cspan class=\"box\"\u003e\u003c/span\u003eमैं एक या ज़्यादा पैरामीटर बदलता हूं — कौन से और क्यों: ___________________________","it":"\u003cspan class=\"box\"\u003e\u003c/span\u003eAdeguo uno o più parametri — quali e perché: ___________________________","ja":"\u003cspan class=\"box\"\u003e\u003c/span\u003e1つ以上のパラメーターを調整する — どれを、なぜ：___________________________","pt":"\u003cspan class=\"box\"\u003e\u003c/span\u003eAjusto um ou vários parâmetros — quais e porquê: ___________________________","ru":"\u003cspan class=\"box\"\u003e\u003c/span\u003eКорректирую один или несколько параметров — какие и почему: ___________________________","zh":"\u003cspan class=\"box\"\u003e\u003c/span\u003e我调整一个或多个参数——调整哪些、为什么：___________________________"},"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 2 du Plan de Trading Professionnel":{"ar":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — المكافأة 2 من خطة التداول الاحترافية","de":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 2 des Professionellen Trading-Plans","en":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 2 of the Professional Trading Plan","es":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 2 del Plan de Trading Profesional","hi":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — पेशेवर ट्रेडिंग प्लान का बोनस 2","it":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus 2 del Piano di Trading Professionale","ja":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — プロのトレードプランのボーナス2","pt":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bónus 2 do Plano de Trading Profissional","ru":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Бонус 2 к Профессиональному торговому плану","zh":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — 专业交易计划附赠2"}};
+var JAZ_F_UI = {
+"fr":{"title":"Bonus 2 — Checklist de révision mensuelle — JAZ TRADING FIMC"},
+"en":{"title":"Bonus 2 — Monthly review checklist — JAZ TRADING FIMC"},
+"es":{"title":"Bonus 2 — Checklist de revisión mensual — JAZ TRADING FIMC"},
+"pt":{"title":"Bónus 2 — Checklist de revisão mensal — JAZ TRADING FIMC"},
+"de":{"title":"Bonus 2 — Checkliste für den Monatsrückblick — JAZ TRADING FIMC"},
+"it":{"title":"Bonus 2 — Checklist di revisione mensile — JAZ TRADING FIMC"},
+"ru":{"title":"Бонус 2 — Чек-лист ежемесячного разбора — JAZ TRADING FIMC"},
+"zh":{"title":"附赠2 — 月度复盘检查清单 — JAZ TRADING FIMC"},
+"ja":{"title":"ボーナス2 — 月次レビューのチェックリスト — JAZ TRADING FIMC"},
+"ar":{"title":"المكافأة 2 — قائمة المراجعة الشهرية — JAZ TRADING FIMC"},
+"hi":{"title":"बोनस 2 — मासिक समीक्षा चेकलिस्ट — JAZ TRADING FIMC"}
+}
+;
+var JAZ_F_LANGS = ['fr','en','es','ar','zh','de','pt','ru','it','ja','hi'];
+var JAZ_F_BASE = 'h1,h2,h3,h4,h5,p,li,td,th,dt,dd,caption,figcaption,label,button,option';
+var JAZ_F_SEL = JAZ_F_BASE + ',.jz-tx';
+var JAZ_F_INLINE = /^(STRONG|EM|B|I|U|BR|A|SPAN|SUP|SUB|CODE|SMALL|MARK)$/;
+function jzfNorm(s) { return s.replace(/\s+/g, ' ').trim(); }
+function jzfIsLeaf(el) { return el.matches(JAZ_F_BASE) && !el.querySelector(JAZ_F_BASE); }
+// regroupe le texte libre (hors balises de bloc) dans des <span class="jz-tx"> pour pouvoir le traduire
+function jzfWrap(root) {
+  var all = root.querySelectorAll('*');
+  for (var i = 0; i < all.length; i++) {
+    var el = all[i];
+    if (el.closest('script,style,svg,select,.jz-lang')) continue;
+    var hasText = false;
+    for (var c = el.firstChild; c; c = c.nextSibling) if (c.nodeType === 3 && /[A-Za-zÀ-ÿ]/.test(c.nodeValue)) { hasText = true; break; }
+    if (!hasText) continue;
+    var a = el, covered = false;
+    while (a && a !== root) { if (jzfIsLeaf(a) || (a.classList && a.classList.contains('jz-tx'))) { covered = true; break; } a = a.parentElement; }
+    if (covered) continue;
+    var run = [], kids = Array.prototype.slice.call(el.childNodes);
+    var flush = function () {
+      if (run.some(function (n) { return /[A-Za-zÀ-ÿ]/.test(n.nodeType === 3 ? n.nodeValue : n.textContent); })) {
+        var sp = document.createElement('span'); sp.className = 'jz-tx';
+        run[0].parentNode.insertBefore(sp, run[0]);
+        run.forEach(function (n) { sp.appendChild(n); });
+      }
+      run = [];
+    };
+    kids.forEach(function (n) {
+      var inline = n.nodeType === 3 || (n.nodeType === 1 && JAZ_F_INLINE.test(n.tagName) && !n.matches(JAZ_F_SEL) && !n.querySelector(JAZ_F_SEL + ',div,ul,ol,table,p'));
+      if (inline) run.push(n); else flush();
+    });
+    flush();
+  }
+}
+var jzfEls = null;
+function jzfCollect() {
+  if (jzfEls) return jzfEls;
+  jzfWrap(document.body);
+  var all = Array.prototype.slice.call(document.querySelectorAll(JAZ_F_SEL));
+  jzfEls = all.filter(function (el) { return !el.closest('.jz-lang,script,style') && !el.querySelector(JAZ_F_SEL); });
+  jzfEls.forEach(function (el) { el.__jzFr = el.innerHTML; });
+  return jzfEls;
+}
+function jzfApply(lang) {
+  if (JAZ_F_LANGS.indexOf(lang) < 0) lang = 'fr';
+  var ui = JAZ_F_UI[lang] || JAZ_F_UI.fr;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  jzfCollect().forEach(function (el) {
+    var row = JAZ_F_I18N[jzfNorm(el.__jzFr)];
+    el.innerHTML = (lang !== 'fr' && row && row[lang]) ? row[lang] : el.__jzFr;
+  });
+  var pw = document.getElementById('jazPwdInput');
+  if (pw && ui.pwPh) pw.placeholder = ui.pwPh;
+  document.title = ui.title;
+  document.querySelectorAll('a[data-dl]').forEach(function (a) { a.setAttribute('download', a.getAttribute('data-dl').replace('{L}', lang.toUpperCase())); });
+  var opt = document.querySelector('.lang-option[data-lang="' + lang + '"]');
+  document.querySelectorAll('.lang-option').forEach(function (b) { b.classList.toggle('active', b === opt); });
+  if (opt) {
+    document.getElementById('curFlag').innerHTML = opt.querySelector('.option-flag').innerHTML;
+    document.getElementById('curCode').textContent = lang.toUpperCase();
+  }
+  try { localStorage.setItem('jaz_selected_lang', lang); } catch (e) {}
+}
+function selectLanguage(lang) { jzfApply(lang); document.getElementById('langWrap').classList.remove('open'); }
+(function () {
+  var wrap = document.getElementById('langWrap'), btn = document.getElementById('langBtn');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = wrap.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) wrap.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') wrap.classList.remove('open'); });
+  var saved = 'fr';
+  try { saved = localStorage.getItem('jaz_selected_lang') || 'fr'; } catch (e) {}
+  jzfApply(saved);
+})();
+</script>
 </body>
 </html>

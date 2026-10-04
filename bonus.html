@@ -103,6 +103,108 @@
 </style>
 </head>
 <body>
+<style>
+  .jz-lang{position:fixed;top:16px;right:16px;z-index:100000;font-family:"Source Serif 4",Georgia,serif}
+  [dir="rtl"] .jz-lang{right:auto;left:16px}
+  .jz-lang .lang-btn{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:none;background:#153840;color:#fff;font-family:inherit;font-weight:700;font-size:.85rem;letter-spacing:.03em;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+  .jz-lang .lang-btn .chev{width:12px;height:12px;transition:transform .2s}
+  .jz-lang.open .lang-btn .chev{transform:rotate(180deg)}
+  .jz-lang .lang-menu{position:absolute;top:calc(100% + 10px);inset-inline-end:0;width:250px;max-width:calc(100vw - 32px);padding:10px;border-radius:14px;background:#fff;border:1px solid #DCD2B8;box-shadow:0 20px 50px -10px rgba(0,0,0,.35);opacity:0;visibility:hidden;transform:translateY(-6px);transition:all .2s ease}
+  .jz-lang.open .lang-menu{opacity:1;visibility:visible;transform:none}
+  .jz-lang .lang-menu-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:#5B5548;padding:4px 6px 10px}
+  .jz-lang .lang-options-grid{display:grid;grid-template-columns:1fr;gap:2px;max-height:60vh;overflow-y:auto}
+  .jz-lang .lang-option{display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;border-radius:9px;background:transparent;color:#2A2620;text-align:start;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer}
+  .jz-lang .lang-option:hover,.jz-lang .lang-option.active{background:#E8F1F5;color:#153840}
+  .jz-lang .lang-option .option-name{flex:1}
+  .jz-lang .lang-option .option-code{font-size:11px;font-weight:700;color:#5B5548}
+  [dir="rtl"] .lecon ul,[dir="rtl"] .lecon ol{padding-left:0;padding-right:1.4rem}
+  [dir="rtl"] .exemple,[dir="rtl"] .callout{border-left:none;border-right:3px solid var(--ember)}
+  [dir="rtl"] .callout{border-right-color:var(--pine-soft)}
+  [dir="rtl"] .checklist li{padding:.55rem 2.1rem .55rem 0}
+  [dir="rtl"] .checklist li::before{left:auto;right:0}
+  [dir="rtl"] thead th{text-align:right}
+  @media (max-width:640px){.jz-lang{top:10px;right:10px}[dir="rtl"] .jz-lang{left:10px}
+    table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+</style>
+<div class="jz-lang" id="langWrap">
+  <button class="lang-btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+    <span id="curFlag"></span><span id="curCode">FR</span>
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <div class="lang-menu" id="langMenu">
+    <div class="lang-menu-title">CHOISIR LA LANGUE / SELECT LANGUAGE</div>
+    <div class="lang-options-grid">
+                <button class="lang-option active" data-lang="fr" onclick="selectLanguage('fr')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#fff" d="M0 0h640v480H0z"/><path fill="#002654" d="M0 0h213.3v480H0z"/><path fill="#ce1126" d="M426.7 0H640v480H426.7z"/></g></svg></span>
+                  <span class="option-name">Français</span>
+                  <span class="option-code">FR</span>
+                </button>
+                <button class="lang-option" data-lang="en" onclick="selectLanguage('en')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#012169" d="M0 0h640v480H0z"/><path fill="#fff" d="m75 0 245 180L565 0h75v60L435 240l205 180v60h-75L320 300 75 480H0v-60l205-180L0 60V0h75z"/><path fill="#C8102E" d="m424 288 216 158v34h-46L378 300l46-12zM0 480l196-144h46L26 480H0zM640 0 444 144h-46L614 0h26zM0 0l216 158-46 12L0 34V0z"/><path fill="#fff" d="M240 0h160v480H240zM0 160h640v160H0z"/><path fill="#C8102E" d="M266 0h108v480H266zM0 186h640v108H0z"/></svg></span>
+                  <span class="option-name">English</span>
+                  <span class="option-code">EN</span>
+                </button>
+                <button class="lang-option" data-lang="es" onclick="selectLanguage('es')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#c60b1e" d="M0 0h640v480H0z"/><path fill="#ffc400" d="M0 120h640v240H0z"/></svg></span>
+                  <span class="option-name">Español</span>
+                  <span class="option-code">ES</span>
+                </button>
+                <button class="lang-option" data-lang="ar" onclick="selectLanguage('ar')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#006c35" d="M0 0h640v480H0z"/><path fill="#fff" d="M120 280h400v20H120zM220 200h200v30H220z"/></svg></span>
+                  <span class="option-name">العربية</span>
+                  <span class="option-code">AR</span>
+                </button>
+                <button class="lang-option" data-lang="zh" onclick="selectLanguage('zh')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#de2910" d="M0 0h640v480H0z"/><polygon fill="#ffde00" points="160,80 178,136 238,136 190,172 208,228 160,192 112,228 130,172 82,136 142,136"/></svg></span>
+                  <span class="option-name">中文 (Chinois)</span>
+                  <span class="option-code">ZH</span>
+                </button>
+                <button class="lang-option" data-lang="de" onclick="selectLanguage('de')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#000" d="M0 0h640v160H0z"/><path fill="#d00" d="M0 160h640v160H0z"/><path fill="#ffce00" d="M0 320h640v160H0z"/></svg></span>
+                  <span class="option-name">Deutsch</span>
+                  <span class="option-code">DE</span>
+                </button>
+                <button class="lang-option" data-lang="pt" onclick="selectLanguage('pt')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#ff0000" d="M0 0h640v480H0z"/><path fill="#006600" d="M0 0h256v480H0z"/><circle cx="256" cy="240" r="80" fill="#ffff00"/></svg></span>
+                  <span class="option-name">Português</span>
+                  <span class="option-code">PT</span>
+                </button>
+                <button class="lang-option" data-lang="ru" onclick="selectLanguage('ru')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#fff" d="M0 0h640v160H0z"/><path fill="#0039a6" d="M0 160h640v160H0z"/><path fill="#d52b1e" d="M0 320h640v160H0z"/></svg></span>
+                  <span class="option-name">Русский</span>
+                  <span class="option-code">RU</span>
+                </button>
+                <button class="lang-option" data-lang="it" onclick="selectLanguage('it')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><g fill-rule="evenodd" stroke-width="1pt"><path fill="#fff" d="M0 0h640v480H0z"/><path fill="#009246" d="M0 0h213.3v480H0z"/><path fill="#ce2b37" d="M426.7 0H640v480H426.7z"/></g></svg></span>
+                  <span class="option-name">Italiano</span>
+                  <span class="option-code">IT</span>
+                </button>
+                <button class="lang-option" data-lang="ja" onclick="selectLanguage('ja')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#fff" d="M0 0h640v480H0z"/><circle cx="320" cy="240" r="144" fill="#bc002d"/></svg></span>
+                  <span class="option-name">日本語 (Japonais)</span>
+                  <span class="option-code">JA</span>
+                </button>
+                <button class="lang-option" data-lang="hi" onclick="selectLanguage('hi')">
+                  <span class="option-flag"><svg class="flag-icon" width="22" height="15" viewBox="0 0 640 480" style="vertical-align:middle; border-radius:2px; display:inline-block;"><path fill="#f93" d="M0 0h640v160H0z"/><path fill="#fff" d="M0 160h640v160H0z"/><path fill="#128807" d="M0 320h640v160H0z"/><circle cx="320" cy="240" r="50" fill="none" stroke="#008" stroke-width="10"/></svg></span>
+                  <span class="option-name">हिन्दी (Hindi)</span>
+                  <span class="option-code">HI</span>
+                </button>
+              </div>
+  </div>
+</div>
+
+<style>
+  .jz-lang{font-family:"Source Sans Pro","Segoe UI",Arial,sans-serif}
+  .jz-lang .lang-btn{background:#0A1628; border:1px solid rgba(255,255,255,.25)}
+  [dir="rtl"] .bonus-card,[dir="rtl"] .card{border-left:1px solid var(--line); border-right:4px solid var(--navy)}
+  [dir="rtl"] .note{border-left:none; border-right:3px solid var(--blue); border-radius:8px 0 0 8px}
+  [dir="rtl"] .warn{border-left:none; border-right:3px solid var(--red); border-radius:6px 0 0 6px}
+  [dir="rtl"] .field:nth-child(odd){border-right:none; border-left:1px solid var(--line)}
+  @media(max-width:600px){ [dir="rtl"] .field:nth-child(odd){border-left:none} }
+  @media(max-width:560px){ [dir="rtl"] .bonus-card{text-align:right} }
+  @media print{ .jz-lang{display:none} }
+</style>
+
 
 <div class="cover">
   <div class="wrap">
@@ -149,5 +251,101 @@
 
 <footer><b>JAZ TRADING FIMC</b> — Bonus du Plan de Trading Professionnel</footer>
 
+<script>
+// TRADUCTION 11 LANGUES DU PLAN DE TRADING : le français est la source, chaque bloc de texte est remplacé selon la langue choisie
+var JAZ_F_I18N = {"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC":{"ar":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","de":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","en":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","es":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","hi":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","it":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","ja":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","pt":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","ru":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC","zh":"JAZ \u003cb\u003eTRADING\u003c/b\u003e · FIMC"},"Vos bonus du Plan de Trading Professionnel":{"ar":"مكافآت خطة التداول الاحترافية","de":"Deine Boni zum Professionellen Trading-Plan","en":"Your Professional Trading Plan bonuses","es":"Tus bonus del Plan de Trading Profesional","hi":"पेशेवर ट्रेडिंग प्लान के तुम्हारे बोनस","it":"I tuoi bonus del Piano di Trading Professionale","ja":"プロのトレードプランのボーナス","pt":"Os teus bónus do Plano de Trading Profissional","ru":"Твои бонусы к Профессиональному торговому плану","zh":"你的专业交易计划附赠"},"Téléchargez vos deux checklists — elles s\u0027ouvrent hors ligne, se remplissent à l\u0027écran ou s\u0027impriment.":{"ar":"حمّل قائمتي التحقق — تُفتحان دون اتصال، ويمكن تعبئتهما على الشاشة أو طباعتهما.","de":"Lade deine zwei Checklisten herunter — sie funktionieren offline, lassen sich am Bildschirm ausfüllen oder ausdrucken.","en":"Download your two checklists — they open offline, can be filled in on screen or printed.","es":"Descarga tus dos checklists: se abren sin conexión, se rellenan en pantalla o se imprimen.","hi":"अपनी दोनों चेकलिस्ट डाउनलोड करो — ये ऑफ़लाइन खुलती हैं, स्क्रीन पर भरी जा सकती हैं या प्रिंट की जा सकती हैं।","it":"Scarica le tue due checklist: si aprono offline, si compilano sullo schermo o si stampano.","ja":"2つのチェックリストをダウンロードしましょう — オフラインで開け、画面上で記入することも印刷することもできます。","pt":"Descarrega as tuas duas checklists — abrem-se offline, preenchem-se no ecrã ou imprimem-se.","ru":"Скачай два чек-листа — они открываются без интернета, заполняются на экране или распечатываются.","zh":"下载你的两份检查清单——可离线打开，可在屏幕上填写或打印。"},"Bonus 1":{"ar":"المكافأة 1","de":"Bonus 1","en":"Bonus 1","es":"Bonus 1","hi":"बोनस 1","it":"Bonus 1","ja":"ボーナス1","pt":"Bónus 1","ru":"Бонус 1","zh":"附赠1"},"Checklist avant chaque position":{"ar":"قائمة التحقق قبل كل صفقة","de":"Checkliste vor jeder Position","en":"Checklist before every position","es":"Checklist antes de cada posición","hi":"हर पोज़ीशन से पहले की चेकलिस्ट","it":"Checklist prima di ogni posizione","ja":"ポジションを取る前のチェックリスト","pt":"Checklist antes de cada posição","ru":"Чек-лист перед каждой позицией","zh":"每次开仓前的检查清单"},"Le contrôle de 30 secondes à faire avant d\u0027entrer en position.":{"ar":"فحص مدته 30 ثانية قبل الدخول في أي صفقة.","de":"Der 30-Sekunden-Check vor jedem Einstieg in eine Position.","en":"The 30-second check to run before entering a position.","es":"El control de 30 segundos que hay que hacer antes de entrar en posición.","hi":"पोज़ीशन में घुसने से पहले 30 सेकंड की जांच।","it":"Il controllo di 30 secondi da fare prima di entrare in posizione.","ja":"ポジションを取る前に行う30秒のチェック。","pt":"O controlo de 30 segundos a fazer antes de entrar em posição.","ru":"30-секундная проверка перед входом в позицию.","zh":"开仓前30秒完成的检查。"},"Télécharger":{"ar":"تحميل","de":"Herunterladen","en":"Download","es":"Descargar","hi":"डाउनलोड करो","it":"Scarica","ja":"ダウンロード","pt":"Descarregar","ru":"Скачать","zh":"下载"},"Bonus 2":{"ar":"المكافأة 2","de":"Bonus 2","en":"Bonus 2","es":"Bonus 2","hi":"बोनस 2","it":"Bonus 2","ja":"ボーナス2","pt":"Bónus 2","ru":"Бонус 2","zh":"附赠2"},"Checklist de révision mensuelle":{"ar":"قائمة المراجعة الشهرية","de":"Checkliste für den Monatsrückblick","en":"Monthly review checklist","es":"Checklist de revisión mensual","hi":"मासिक समीक्षा चेकलिस्ट","it":"Checklist di revisione mensile","ja":"月次レビューのチェックリスト","pt":"Checklist de revisão mensal","ru":"Чек-лист ежемесячного разбора","zh":"月度复盘检查清单"},"La revue mensuelle pour vérifier que le plan est respecté et toujours adapté.":{"ar":"المراجعة الشهرية للتأكد من احترام الخطة ومن أنها لا تزال مناسبة.","de":"Der monatliche Rückblick, um zu prüfen, ob der Plan eingehalten wird und noch passt.","en":"The monthly review to check that the plan is being followed and still fits.","es":"La revisión mensual para comprobar que el plan se respeta y sigue siendo adecuado.","hi":"मासिक समीक्षा, यह जांचने के लिए कि प्लान का पालन हो रहा है और वह अब भी सही है।","it":"La revisione mensile per verificare che il piano sia rispettato e ancora adatto.","ja":"プランが守られ、今も合っているかを確認する月次レビュー。","pt":"A revisão mensal para verificar que o plano é respeitado e continua adequado.","ru":"Ежемесячный разбор, чтобы проверить, что план соблюдается и всё ещё подходит.","zh":"每月复盘，检查计划是否得到遵守并依然适用。"},"Le téléchargement démarre directement dans votre navigateur (pas d\u0027inscription, pas d\u0027e-mail à fournir).":{"ar":"يبدأ التحميل مباشرة في متصفحك (دون تسجيل ودون بريد إلكتروني).","de":"Der Download startet direkt in deinem Browser (keine Anmeldung, keine E-Mail nötig).","en":"The download starts directly in your browser (no sign-up, no email required).","es":"La descarga empieza directamente en tu navegador (sin registro y sin email).","hi":"डाउनलोड सीधे तुम्हारे ब्राउज़र में शुरू होता है (न रजिस्ट्रेशन, न ईमेल)।","it":"Il download parte direttamente nel tuo browser (nessuna registrazione, nessuna email richiesta).","ja":"ダウンロードはブラウザで直接始まります（登録不要、メールアドレス不要）。","pt":"A transferência começa diretamente no teu navegador (sem registo, sem email).","ru":"Скачивание начнётся прямо в браузере (без регистрации и без email).","zh":"下载会直接在浏览器中开始（无需注册，无需邮箱）。"},"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus du Plan de Trading Professionnel":{"ar":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — مكافآت خطة التداول الاحترافية","de":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Boni zum Professionellen Trading-Plan","en":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Professional Trading Plan bonuses","es":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus del Plan de Trading Profesional","hi":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — पेशेवर ट्रेडिंग प्लान के बोनस","it":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bonus del Piano di Trading Professionale","ja":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — プロのトレードプランのボーナス","pt":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Bónus do Plano de Trading Profissional","ru":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — Бонусы к Профессиональному торговому плану","zh":"\u003cb\u003eJAZ TRADING FIMC\u003c/b\u003e — 专业交易计划附赠"}};
+var JAZ_F_UI = {
+"fr":{"title":"Vos Bonus — JAZ TRADING FIMC"},
+"en":{"title":"Your Bonuses — JAZ TRADING FIMC"},
+"es":{"title":"Tus bonus — JAZ TRADING FIMC"},
+"pt":{"title":"Os teus bónus — JAZ TRADING FIMC"},
+"de":{"title":"Deine Boni — JAZ TRADING FIMC"},
+"it":{"title":"I tuoi bonus — JAZ TRADING FIMC"},
+"ru":{"title":"Твои бонусы — JAZ TRADING FIMC"},
+"zh":{"title":"你的附赠 — JAZ TRADING FIMC"},
+"ja":{"title":"あなたのボーナス — JAZ TRADING FIMC"},
+"ar":{"title":"مكافآتك — JAZ TRADING FIMC"},
+"hi":{"title":"तुम्हारे बोनस — JAZ TRADING FIMC"}
+}
+;
+var JAZ_F_LANGS = ['fr','en','es','ar','zh','de','pt','ru','it','ja','hi'];
+var JAZ_F_BASE = 'h1,h2,h3,h4,h5,p,li,td,th,dt,dd,caption,figcaption,label,button,option';
+var JAZ_F_SEL = JAZ_F_BASE + ',.jz-tx';
+var JAZ_F_INLINE = /^(STRONG|EM|B|I|U|BR|A|SPAN|SUP|SUB|CODE|SMALL|MARK)$/;
+function jzfNorm(s) { return s.replace(/\s+/g, ' ').trim(); }
+function jzfIsLeaf(el) { return el.matches(JAZ_F_BASE) && !el.querySelector(JAZ_F_BASE); }
+// regroupe le texte libre (hors balises de bloc) dans des <span class="jz-tx"> pour pouvoir le traduire
+function jzfWrap(root) {
+  var all = root.querySelectorAll('*');
+  for (var i = 0; i < all.length; i++) {
+    var el = all[i];
+    if (el.closest('script,style,svg,select,.jz-lang')) continue;
+    var hasText = false;
+    for (var c = el.firstChild; c; c = c.nextSibling) if (c.nodeType === 3 && /[A-Za-zÀ-ÿ]/.test(c.nodeValue)) { hasText = true; break; }
+    if (!hasText) continue;
+    var a = el, covered = false;
+    while (a && a !== root) { if (jzfIsLeaf(a) || (a.classList && a.classList.contains('jz-tx'))) { covered = true; break; } a = a.parentElement; }
+    if (covered) continue;
+    var run = [], kids = Array.prototype.slice.call(el.childNodes);
+    var flush = function () {
+      if (run.some(function (n) { return /[A-Za-zÀ-ÿ]/.test(n.nodeType === 3 ? n.nodeValue : n.textContent); })) {
+        var sp = document.createElement('span'); sp.className = 'jz-tx';
+        run[0].parentNode.insertBefore(sp, run[0]);
+        run.forEach(function (n) { sp.appendChild(n); });
+      }
+      run = [];
+    };
+    kids.forEach(function (n) {
+      var inline = n.nodeType === 3 || (n.nodeType === 1 && JAZ_F_INLINE.test(n.tagName) && !n.matches(JAZ_F_SEL) && !n.querySelector(JAZ_F_SEL + ',div,ul,ol,table,p'));
+      if (inline) run.push(n); else flush();
+    });
+    flush();
+  }
+}
+var jzfEls = null;
+function jzfCollect() {
+  if (jzfEls) return jzfEls;
+  jzfWrap(document.body);
+  var all = Array.prototype.slice.call(document.querySelectorAll(JAZ_F_SEL));
+  jzfEls = all.filter(function (el) { return !el.closest('.jz-lang,script,style') && !el.querySelector(JAZ_F_SEL); });
+  jzfEls.forEach(function (el) { el.__jzFr = el.innerHTML; });
+  return jzfEls;
+}
+function jzfApply(lang) {
+  if (JAZ_F_LANGS.indexOf(lang) < 0) lang = 'fr';
+  var ui = JAZ_F_UI[lang] || JAZ_F_UI.fr;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  jzfCollect().forEach(function (el) {
+    var row = JAZ_F_I18N[jzfNorm(el.__jzFr)];
+    el.innerHTML = (lang !== 'fr' && row && row[lang]) ? row[lang] : el.__jzFr;
+  });
+  var pw = document.getElementById('jazPwdInput');
+  if (pw && ui.pwPh) pw.placeholder = ui.pwPh;
+  document.title = ui.title;
+  document.querySelectorAll('a[data-dl]').forEach(function (a) { a.setAttribute('download', a.getAttribute('data-dl').replace('{L}', lang.toUpperCase())); });
+  var opt = document.querySelector('.lang-option[data-lang="' + lang + '"]');
+  document.querySelectorAll('.lang-option').forEach(function (b) { b.classList.toggle('active', b === opt); });
+  if (opt) {
+    document.getElementById('curFlag').innerHTML = opt.querySelector('.option-flag').innerHTML;
+    document.getElementById('curCode').textContent = lang.toUpperCase();
+  }
+  try { localStorage.setItem('jaz_selected_lang', lang); } catch (e) {}
+}
+function selectLanguage(lang) { jzfApply(lang); document.getElementById('langWrap').classList.remove('open'); }
+(function () {
+  var wrap = document.getElementById('langWrap'), btn = document.getElementById('langBtn');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = wrap.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) wrap.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') wrap.classList.remove('open'); });
+  var saved = 'fr';
+  try { saved = localStorage.getItem('jaz_selected_lang') || 'fr'; } catch (e) {}
+  jzfApply(saved);
+})();
+</script>
 </body>
 </html>
